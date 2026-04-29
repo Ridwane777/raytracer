@@ -1,5 +1,6 @@
 #ifndef COLOR_HPP_
 #define COLOR_HPP_
+#include <algorithm>
 
 class Color {
 public:
