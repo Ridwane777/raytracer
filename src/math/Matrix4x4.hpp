@@ -1,6 +1,7 @@
 #ifndef MATRIX4X4_HPP_
 #define MATRIX4X4_HPP_
 #include "Ray.hpp"
+#include <cmath>
 
 class Matrix4x4 {
 public:
