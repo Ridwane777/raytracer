@@ -17,6 +17,7 @@ public:
 
     Matrix4x4 operator*(const Matrix4x4& other) const;
     Matrix4x4 inverse() const;
+    Matrix4x4 transpose() const;
 
     Point3D  transformPoint(const Point3D& p) const;
     Vector3D transformVector(const Vector3D& v) const;
