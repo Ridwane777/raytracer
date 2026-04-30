@@ -392,6 +392,17 @@ public:
     int      height;
     double   fov;      // en degrés
 
+    // 1. Constructeur par défaut
+    Camera();
+
+    // 2. Constructeur de recopie
+    Camera(const Camera& other);
+
+    // 3. Opérateur d'affectation
+    Camera& operator=(const Camera& other);
+
+    // 4. Destructeur
+    ~Camera();
     Camera(const Point3D& position, const Vector3D& rotation,
            int width, int height, double fov);
 
