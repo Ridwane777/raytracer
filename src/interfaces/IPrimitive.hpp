@@ -1,8 +1,8 @@
 #ifndef IPRIMITIVE_HPP_
 #define IPRIMITIVE_HPP_
 #include <optional>
-#include "Ray.hpp"
-#include "Color.hpp"
+#include "../math/Ray.hpp"
+#include "../math/Color.hpp"
 
 class IPrimitive {
 public:
