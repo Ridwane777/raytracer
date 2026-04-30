@@ -8,8 +8,8 @@ class Point3D {
         double Y;
         double Z;
 
-        Point3D() : X(0.0), Y(0.0), Z(0.0)  {};
-        Point3D(double x, double y, double z) : X(x), Y(y), Z(z) {};
+        Point3D();
+        Point3D(double x, double y, double z);
         ~Point3D() = default;
 
         Point3D operator+(const Vector3D& v) const;
