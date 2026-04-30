@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "../math/Matrix4x4.hpp"
 
 Camera::Camera() : position(), rotation(), width(0), height(0), fov(0.0) 
 {
@@ -35,10 +36,19 @@ Rectangle3D Camera::getScreen() const {
     double halfHeight = tan((fov * M_PI / 180.0) / 2.0);
     double halfWidth = ratio * halfHeight;
 
-    // Plan image centré à distance 1 devant la caméra (axe -Z par défaut)
-    Point3D  origin      = Point3D(position.X - halfWidth, position.Y - halfHeight, position.Z - 1.0);
-    Vector3D bottom_side = Vector3D((2.0 * halfWidth), 0.0, 0.0);
-    Vector3D left_side   = Vector3D(0.0, (2.0 * halfHeight), 0.0);
+    Matrix4x4 rotMatrix = Matrix4x4::rotationX(rotation.X) *
+                          Matrix4x4::rotationY(rotation.Y) *
+                          Matrix4x4::rotationZ(rotation.Z);
+
+    Vector3D localOriginVec(-halfWidth, -halfHeight, -1.0);
+    Vector3D localBottomVec((2.0 * halfWidth), 0.0, 0.0);
+    Vector3D localLeftVec(0.0, (2.0 * halfHeight), 0.0);
+
+    Vector3D rotatedOriginVec = rotMatrix.transformVector(localOriginVec);
+    Vector3D bottom_side = rotMatrix.transformVector(localBottomVec);
+    Vector3D left_side   = rotMatrix.transformVector(localLeftVec);
+
+    Point3D origin = position + rotatedOriginVec;
 
     return Rectangle3D(origin, bottom_side, left_side);
 }

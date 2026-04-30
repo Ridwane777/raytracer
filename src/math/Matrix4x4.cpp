@@ -128,6 +128,17 @@ Matrix4x4 Matrix4x4::inverse() const {
     return res;
 }
 
+Matrix4x4 Matrix4x4::transpose() const {
+    Matrix4x4 res;
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            res.m[i][j] = m[j][i];
+        }
+    }
+    return res;
+}
+
 Point3D Matrix4x4::transformPoint(const Point3D& p) const {
     Point3D new_point;
 
@@ -150,7 +161,7 @@ Vector3D Matrix4x4::transformVector(const Vector3D& v) const {
 Ray Matrix4x4::transformRay(const Ray& ray) const {
     Ray r;
 
-    r.origin = transformPoint(r.origin);
-    r.direction = transformVector(r.direction);
+    r.origin = transformPoint(ray.origin);
+    r.direction = transformVector(ray.direction).normalize();
     return r;
 }
