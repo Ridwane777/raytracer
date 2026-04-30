@@ -1,7 +1,7 @@
 #include "Transform.hpp"
 
 Transform::Transform(IPrimitive* primitive, const Matrix4x4& transform) 
-    : _wrapped(primitive), _localToWorld(transform), _worldToLocal(transform.inverse())
+    : _wrapped(primitive), _worldToLocal(transform.inverse()), _localToWorld(transform)
 {}
 
 std::optional<double> Transform::hits(const Ray& ray) const {
@@ -12,7 +12,7 @@ std::optional<double> Transform::hits(const Ray& ray) const {
 Vector3D Transform::getNormal(const Point3D& point) const {
     Point3D localPoint = _worldToLocal.transformPoint(point);
     Vector3D localNormal = _wrapped->getNormal(localPoint);
-    return _localToWorld.transformVector(localNormal).normalize();
+    return _worldToLocal.transpose().transformVector(localNormal).normalize();
 }
 
 Color Transform::getColor(const Point3D& point) const {
