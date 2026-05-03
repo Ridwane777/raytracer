@@ -23,7 +23,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_executable(raytracer ${SOURCES})
 target_include_directories(raytracer PRIVATE ${CMAKE_SOURCE_DIR})
 target_compile_options(raytracer PRIVATE ${PROJECT_COMPILE_FLAGS})
-target_link_libraries(raytracer PRIVATE dl)
+target_link_libraries(raytracer PRIVATE dl config++)
 set_target_properties(raytracer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
