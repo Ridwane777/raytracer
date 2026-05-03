@@ -8,7 +8,7 @@ static void usage() {
     << "   SCENE_FILE: scene configuration" << std::endl;
 }
 
-int main(int ac, char ** av)
+int main(int ac, char **av)
 {
     try {
         if (ac != 2) {
