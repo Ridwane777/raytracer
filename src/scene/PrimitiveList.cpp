@@ -1,9 +1,9 @@
 #include "PrimitiveList.hpp"
 
-PrimitiveList::PrimitiveList()
+/*PrimitiveList::PrimitiveList()
 {
 }
-
+*/
 PrimitiveList::~PrimitiveList()
 {
 }
@@ -48,12 +48,12 @@ void PrimitiveList::add(IPrimitive* primitive)
 
 Vector3D PrimitiveList::getNormal(const Point3D& point) const
 {
-    point;
+    (void)point;
     return Vector3D(0, 0, 0);
 }
 
 Color PrimitiveList::getColor(const Point3D& point) const
 {
-    point;
+    (void)point;
     return Color(0, 0, 0);
 }
