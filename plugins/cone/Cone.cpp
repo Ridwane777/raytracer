@@ -54,7 +54,7 @@ Vector3D Cone::getNormal(const Point3D& point) const
     double k  = std::tan(_angle * M_PI / 180.0);
     double dx = point.X - _center.X;
     double dz = point.Z - _center.Z;
-    double dy = point.Y - _center.Y;
+    //double dy = point.Y - _center.Y;
 
     return Vector3D(dx, -k * std::sqrt(dx*dx + dz*dz), dz).normalize();
 }
