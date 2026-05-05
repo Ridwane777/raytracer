@@ -2,6 +2,8 @@
 #define AMBIENTLIGHT_HPP_
 
 #include "../../src/interfaces/ILight.hpp"
+#include <map>
+#include <string>
 
 class AmbientLight : public ILight {
 public:
@@ -15,6 +17,6 @@ private:
     double _intensity;
 };
 
-extern "C" ILight *createLight();
+extern "C" ILight* createLight(const std::map<std::string, double>& params);
 
-#endif /* !AMBIENTLIGHT_HPP_ */
+#endif // AMBIENTLIGHT_HPP_

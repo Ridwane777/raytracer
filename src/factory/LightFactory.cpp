@@ -1,35 +1,14 @@
 #include "LightFactory.hpp"
-#include "../Error.hpp"
 
-std::unique_ptr<ILight> LightFactory::create(const std::string& pluginPath)
+LightFactory::LightPtr LightFactory::create(
+    const std::string& pluginPath,
+    const std::map<std::string, double>& params)
 {
-    auto loader = std::make_unique<DLLoader<ILight>>();
+    auto loader = std::make_shared<Loader>();
+    loader->loadlib(pluginPath, "createLight", "destroyLight", params);
 
-    std::string path = pluginPath;
-    std::string func = "createLight";
-    loader->loadlib(path, func);
-
-    ILight* raw = loader->getInstance();
-    if (!raw)
-        throw Error("LightFactory: plugin returned null: " + pluginPath);
-
-    _loaders.push_back(std::move(loader));
-
-    // The DLLoader owns the raw pointer — use a no-op deleter here.
-    return std::unique_ptr<ILight>(raw, [](ILight*){});
-}
-
-std::vector<std::unique_ptr<ILight>> LightFactory::createSceneLights(
-    const std::string& ambientPath,
-    const std::string& directionalPath)
-{
-    std::vector<std::unique_ptr<ILight>> lights;
-
-    if (!ambientPath.empty())
-        lights.push_back(create(ambientPath));
-
-    if (!directionalPath.empty())
-        lights.push_back(create(directionalPath));
-
-    return lights;
+    return std::shared_ptr<ILight>(loader->getInstance(),
+        [loader](ILight*) mutable {
+            loader.reset();
+        });
 }

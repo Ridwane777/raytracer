@@ -1,22 +1,23 @@
 #ifndef LIGHTFACTORY_HPP_
 #define LIGHTFACTORY_HPP_
-
-#include <vector>
 #include <memory>
 #include <string>
+#include <map>
 #include "../interfaces/ILight.hpp"
 #include "../DLLoader.hpp"
 
 class LightFactory {
 public:
-    LightFactory() = default;
+    LightFactory()  = default;
     ~LightFactory() = default;
 
-    std::unique_ptr<ILight> create(const std::string& pluginPath);
-    std::vector<std::unique_ptr<ILight>> createSceneLights(const std::string& ambientPath, const std::string& directionalPath);
+    using LightPtr = std::shared_ptr<ILight>;
+
+    LightPtr create(const std::string& pluginPath,
+                    const std::map<std::string, double>& params);
 
 private:
-    std::vector<std::unique_ptr<DLLoader<ILight>>> _loaders;
+    using Loader = DLLoader<ILight, const std::map<std::string, double>&>;
 };
 
-#endif /* !LIGHTFACTORY_HPP_ */
+#endif // LIGHTFACTORY_HPP_

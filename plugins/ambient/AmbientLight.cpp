@@ -1,7 +1,8 @@
 #include "AmbientLight.hpp"
 
 AmbientLight::AmbientLight(double intensity)
-    : _intensity(intensity) {}
+    : _intensity(intensity)
+{}
 
 Color AmbientLight::computeContribution(const HitInfo& hit,
                                         const IPrimitive& scene) const
@@ -11,7 +12,8 @@ Color AmbientLight::computeContribution(const HitInfo& hit,
     return Color(_intensity, _intensity, _intensity);
 }
 
-extern "C" ILight *createLight()
+extern "C" ILight* createLight(const std::map<std::string, double>& params)
 {
-    return new AmbientLight();
+    double intensity = params.count("intensity") ? params.at("intensity") : 0.4;
+    return new AmbientLight(intensity);
 }
