@@ -13,6 +13,12 @@ rm -f cmake_install.cmake
 rm -f Makefile
 rm -f compile_commands.json
 
+# Supprime les plugins compilés
+if [ -d "plugins" ]; then
+    rm -f plugins/*.so
+    echo "Plugins (.so) supprimés."
+fi
+
 # Supprime l'exécutable généré à la racine (d'après votre CMakeLists.txt)
 if [ -f "raytracer" ]; then
     rm raytracer
