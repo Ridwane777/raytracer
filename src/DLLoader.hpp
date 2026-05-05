@@ -1,6 +1,5 @@
 #ifndef DLLOADER_HPP_
 #define DLLOADER_HPP_
-#include <iostream>
 #include <string>
 #include <dlfcn.h>
 #include "Error.hpp"
@@ -8,20 +7,18 @@
 template<typename T, typename... Args>
 class DLLoader {
 public:
-    DLLoader() : _handle(nullptr), _lib(nullptr) {}
+    using CreateFn  = T*(*)(Args...);
+    using DestroyFn = void(*)(T*);
 
-    DLLoader(std::string& path, std::string& func, Args... args)
-        : _handle(nullptr), _lib(nullptr)
-    {
-        loadlib(path, func, args...);
-    }
+    DLLoader() : _handle(nullptr), _lib(nullptr), _destroyFn(nullptr) {}
 
     ~DLLoader() { clearlib(); }
 
     DLLoader(const DLLoader&)            = delete;
     DLLoader& operator=(const DLLoader&) = delete;
 
-    void loadlib(std::string& path, std::string& func, Args... args)
+    void loadlib(const std::string& path, const std::string& createfunc,
+                 const std::string& destroyfunc, Args... args)
     {
         clearlib();
 
@@ -29,21 +26,23 @@ public:
         if (!_handle)
             throw DLLoaderError(dlerror());
 
-        void* sym = dlsym(_handle, func.c_str());
-        const char* err = dlerror();
-        if (!sym || err)
-            throw DLLoaderError(err ? err : "dlsym: symbole introuvable");
-        using CreateFn = T*(*)(Args...);
-        _lib = reinterpret_cast<CreateFn>(sym)(args...);
+        _destroyFn = reinterpret_cast<DestroyFn>(loadSym(destroyfunc));
+
+        CreateFn createFn = reinterpret_cast<CreateFn>(loadSym(createfunc));
+        _lib = createFn(args...);
 
         if (!_lib)
-            throw DLLoaderError("createFn() a retourné nullptr pour: " + path);
+            throw DLLoaderError("Erreur de création pour: " + path);
     }
 
     void clearlib()
     {
-        delete _lib;
-        _lib = nullptr;
+        if (_lib && _destroyFn) {
+            _destroyFn(_lib);
+        }
+        _lib       = nullptr;
+        _destroyFn = nullptr;
+
         if (_handle) {
             dlclose(_handle);
             _handle = nullptr;
@@ -55,5 +54,17 @@ public:
 private:
     void* _handle;
     T*    _lib;
+    DestroyFn _destroyFn;
+
+    void* loadSym(const std::string& sym)
+    {
+        dlerror();
+        void* s = dlsym(_handle, sym.c_str());
+        const char* err = dlerror();
+        if (err)
+            throw DLLoaderError(err);
+        return s;
+    }
 };
+
 #endif /* !DLLOADER_HPP_ */
