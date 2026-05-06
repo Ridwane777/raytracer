@@ -1,3 +1,6 @@
+#ifndef SCENECONFIG_HPP_
+#define SCENECONFIG_HPP_
+
 #include <string>
 #include <vector>
 
@@ -84,3 +87,5 @@ struct SceneConfig
     PrimitivesConfig primitives;
     LightsConfig lights;
 };
+
+#endif /* !SCENECONFIG_HPP_ */
