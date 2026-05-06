@@ -1,7 +1,6 @@
 
 #include "SceneParser.hpp"
-#include <iostream>
-#include <stdexcept>
+#include "../Error.hpp"
 
 double SceneParser::getDouble(const libconfig::Setting &s, const char *key, double fallback)
 {
@@ -24,9 +23,9 @@ SceneConfig SceneParser::parse(const std::string &filepath)
     try {
         cfg.readFile(filepath.c_str());
     } catch (const libconfig::FileIOException &e) {
-        throw std::runtime_error("Cannot open scene file: " + filepath);
+        throw ParserError("Cannot open scene file: " + filepath);
     } catch (const libconfig::ParseException &e) {
-        throw std::runtime_error(
+        throw ParserError(
             std::string("Parse error in ") + e.getFile() +
             " at line " + std::to_string(e.getLine()) +
             ": " + e.getError()
