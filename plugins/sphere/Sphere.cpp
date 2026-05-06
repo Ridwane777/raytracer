@@ -48,8 +48,8 @@ Color Sphere::getColor(const Point3D& point) const
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
     Point3D center(params.at("x"), params.at("y"), params.at("z"));
-    double  radius = params.at("radius");
-    Color   color(params.at("r"), params.at("g"), params.at("b"));
+    double  radius = params.at("r");
+    Color   color(params.at("color_r"), params.at("color_g"), params.at("color_b"));
 
     return new Sphere(center, radius, color);
 }
