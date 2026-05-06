@@ -1,34 +1,58 @@
-#include "src/math/Rectangle3D.hpp"
-#include "src/math/Color.hpp"
-#include "src/math/Matrix4x4.hpp"
 #include "Error.hpp"
+#include "parser/SceneParser.hpp"
+#include "scene/SceneBuilder.hpp"
+#include "renderer/Renderer.hpp"
+#include "output/PPMWriter.hpp"
 
-static void usage() {
+#include <iostream>
+#include <string>
+
+static void usage()
+{
     std::cout << "USAGE: ./raytracer <SCENE_FILE>\n"
-    << "   SCENE_FILE: scene configuration" << std::endl;
+              << "   SCENE_FILE: scene configuration (.cfg)" << std::endl;
 }
 
-int main(int ac, char **av)
+int main(int ac, char** av)
 {
     try {
-        if (ac != 2) {
+        if (ac != 2)
             throw Error("Invalid number of arguments.");
-        }
 
-        std::string arg = av[1]; 
+        std::string arg = av[1];
+
         if (arg == "--help") {
             usage();
             return 0;
-        } else if (arg.find(".cfg") != std::string::npos) {
-            // Traiter la scène ici
-            return 0;
-        } else {
-            throw Error("Unknown argument or file format.");
         }
 
-    } catch(const std::exception &e) {
-        std::cout << e.what() << std::endl;
+        if (arg.find(".cfg") == std::string::npos)
+            throw Error("Unknown argument or file format (expected .cfg).");
+
+        // 1. Parse le fichier .cfg → données brutes
+        SceneParser parser;
+        SceneConfig config = parser.parse(arg);
+
+        // 2. Construire la scène (dlopen les plugins depuis ./plugins)
+        SceneBuilder builder("plugins");
+        Scene scene = builder.build(config);
+
+
+
+        // 3. Lancer le rendu (depth=0 : rendu plat)
+        Renderer renderer(scene, 0);
+        auto pixels = renderer.render();
+
+        // 4. Écrire le fichier PPM
+        PPMWriter::write("output.ppm", pixels);
+
+        std::cout << "Render complete → output.ppm ("
+                  << scene.camera.width << "x" << scene.camera.height
+                  << ")" << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
         return 84;
-    };
+    }
     return 0;
 }
