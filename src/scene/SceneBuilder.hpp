@@ -1,33 +1,20 @@
 #ifndef SCENEBUILDER_HPP_
 #define SCENEBUILDER_HPP_
 
-#include "Camera.hpp"
-#include "PrimitiveList.hpp"
-#include "../interfaces/ILight.hpp"
+#include "Scene.hpp"
 #include "../parser/SceneConfig.hpp"
 #include "../factory/PrimitiveFactory.hpp"
 #include "../factory/LightFactory.hpp"
 
-#include <vector>
-#include <memory>
 #include <string>
-
-struct BuiltScene {
-    Camera                                      camera;
-    PrimitiveList                               primitives;
-    std::vector<std::shared_ptr<IPrimitive>>    ownedPrimitives; // garde les plugins vivants
-    std::vector<std::shared_ptr<ILight>>        lights;
-
-    double ambientIntensity = 0.4;
-    double diffuseIntensity = 0.6;
-};
 
 class SceneBuilder {
 public:
-   explicit SceneBuilder(const std::string& pluginDir = ".");
+    explicit SceneBuilder(const std::string& pluginDir = ".");
     ~SceneBuilder() = default;
 
-    BuiltScene build(const SceneConfig& cfg);
+    // Point d'entrée unique : lit un SceneConfig et retourne une Scene prête à rendre.
+    Scene build(const SceneConfig& cfg);
 
 private:
     std::string         _pluginDir;
@@ -36,16 +23,13 @@ private:
 
     Camera buildCamera(const CameraConfig& cfg);
 
-    void buildPrimitives(BuiltScene& scene,
-                         const PrimitivesConfig& cfg);
+    void buildPrimitives(Scene& scene, const PrimitivesConfig& cfg);
+    void addSphere  (Scene& scene, const SphereConfig&   cfg);
+    void addPlane   (Scene& scene, const PlaneConfig&    cfg);
+    void addCylinder(Scene& scene, const CylinderConfig& cfg);
+    void addCone    (Scene& scene, const ConeConfig&     cfg);
 
-    void addSphere  (BuiltScene& scene, const SphereConfig&   cfg);
-    void addPlane   (BuiltScene& scene, const PlaneConfig&    cfg);
-    void addCylinder(BuiltScene& scene, const CylinderConfig& cfg);
-    void addCone    (BuiltScene& scene, const ConeConfig&     cfg);
-
-    void buildLights(std::vector<std::shared_ptr<ILight>>& lights,
-                     const LightsConfig& cfg);
+    void buildLights(Scene& scene, const LightsConfig& cfg);
 
     std::string pluginPath(const std::string& name) const;
 };
