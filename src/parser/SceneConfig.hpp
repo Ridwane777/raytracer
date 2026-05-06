@@ -6,7 +6,7 @@ struct Vec3
     double x = 0, y = 0, z = 0;
 };
 
-struct Color
+struct Colors
 {
     int r = 0, g = 0, b = 0;
 };
@@ -28,28 +28,28 @@ struct SphereConfig
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
-    Color color;
+    Colors color;
 };
 
 struct PlaneConfig
 {
     std::string axis = "Y";
     double position = 0;
-    Color color;
+    Colors color;
 };
 
 struct CylinderConfig
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
-    Color color;
+    Colors color;
 };
 
 struct ConeConfig
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
-    Color color;
+    Colors color;
 };
 
 struct PrimitivesConfig
