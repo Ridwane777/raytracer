@@ -13,9 +13,10 @@
 #include <string>
 
 struct BuiltScene {
-    Camera                                  camera;
-    PrimitiveList                           primitives;
-    std::vector<std::shared_ptr<ILight>>    lights;
+    Camera                                      camera;
+    PrimitiveList                               primitives;
+    std::vector<std::shared_ptr<IPrimitive>>    ownedPrimitives; // garde les plugins vivants
+    std::vector<std::shared_ptr<ILight>>        lights;
 
     double ambientIntensity = 0.4;
     double diffuseIntensity = 0.6;
@@ -35,13 +36,13 @@ private:
 
     Camera buildCamera(const CameraConfig& cfg);
 
-    void buildPrimitives(PrimitiveList& list,
+    void buildPrimitives(BuiltScene& scene,
                          const PrimitivesConfig& cfg);
 
-    void addSphere  (PrimitiveList& list, const SphereConfig&   cfg);
-    void addPlane   (PrimitiveList& list, const PlaneConfig&    cfg);
-    void addCylinder(PrimitiveList& list, const CylinderConfig& cfg);
-    void addCone    (PrimitiveList& list, const ConeConfig&     cfg);
+    void addSphere  (BuiltScene& scene, const SphereConfig&   cfg);
+    void addPlane   (BuiltScene& scene, const PlaneConfig&    cfg);
+    void addCylinder(BuiltScene& scene, const CylinderConfig& cfg);
+    void addCone    (BuiltScene& scene, const ConeConfig&     cfg);
 
     void buildLights(std::vector<std::shared_ptr<ILight>>& lights,
                      const LightsConfig& cfg);

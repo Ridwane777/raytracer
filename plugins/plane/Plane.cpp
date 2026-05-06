@@ -51,9 +51,13 @@ Color Plane::getColor(const Point3D& point) const
 
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
-    char   axis     = static_cast<char>(params.at("axis"));
+    double axisVal = params.at("axis");
+    char   axis    = 'Y'; // default
+    if (axisVal == 0.0)      axis = 'X';
+    else if (axisVal == 2.0) axis = 'Z';
+
     double position = params.at("position");
-    Color  color(params.at("r"), params.at("g"), params.at("b"));
+    Color  color(params.at("color_r"), params.at("color_g"), params.at("color_b"));
 
     return new Plane(axis, position, color);
 }
