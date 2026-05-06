@@ -24,6 +24,7 @@ add_executable(raytracer ${SOURCES})
 target_include_directories(raytracer PRIVATE ${CMAKE_SOURCE_DIR})
 target_compile_options(raytracer PRIVATE ${PROJECT_COMPILE_FLAGS})
 target_link_libraries(raytracer PRIVATE dl config++)
+target_link_options(raytracer PRIVATE -rdynamic)
 set_target_properties(raytracer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
