@@ -84,9 +84,9 @@ Vec3 SceneParser::parseVec3(const libconfig::Setting &s)
     return v;
 }
 
-Color SceneParser::parseColor(const libconfig::Setting &s)
+Colors SceneParser::parseColor(const libconfig::Setting &s)
 {
-    Color c;
+    Colors c;
     if (!s.exists("color")) return c;
 
     const libconfig::Setting &col = s["color"];
