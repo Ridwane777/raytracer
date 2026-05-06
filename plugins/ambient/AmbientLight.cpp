@@ -17,3 +17,8 @@ extern "C" ILight* createLight(const std::map<std::string, double>& params)
     double intensity = params.count("intensity") ? params.at("intensity") : 0.4;
     return new AmbientLight(intensity);
 }
+
+extern "C" void destroyLight(ILight* light)
+{
+    delete light;
+}

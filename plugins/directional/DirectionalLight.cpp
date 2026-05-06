@@ -31,3 +31,8 @@ extern "C" ILight* createLight(const std::map<std::string, double>& params)
 
     return new DirectionalLight(Vector3D(dx, dy, dz), intensity);
 }
+
+extern "C" void destroyLight(ILight* light)
+{
+    delete light;
+}
