@@ -5,9 +5,6 @@ Renderer::Renderer(const Scene& scene, int maxDepth)
 {
 }
 
-// ---------------------------------------------------------------------------
-// Boucle principale de rendu
-// ---------------------------------------------------------------------------
 std::vector<std::vector<Color>> Renderer::render() const
 {
     const int width  = _scene.camera.width;
@@ -25,9 +22,6 @@ std::vector<std::vector<Color>> Renderer::render() const
     return pixels;
 }
 
-// ---------------------------------------------------------------------------
-// Calcul de la couleur pour un rayon
-// ---------------------------------------------------------------------------
 Color Renderer::computeColor(const Ray& ray, int depth) const
 {
     // Arrêt de la récursion (reflets/réfraction désactivés à depth=0)
@@ -63,9 +57,6 @@ Color Renderer::computeColor(const Ray& ray, int depth) const
     return (objColor * lighting).clamp();
 }
 
-// ---------------------------------------------------------------------------
-// Éclairage direct : somme des lumières
-// ---------------------------------------------------------------------------
 Color Renderer::computeDirectLighting(const IPrimitive& primitive,
                                       const HitInfo& info) const
 {
@@ -79,9 +70,6 @@ Color Renderer::computeDirectLighting(const IPrimitive& primitive,
     return total;
 }
 
-// ---------------------------------------------------------------------------
-// Réflexion (could) — stub
-// ---------------------------------------------------------------------------
 Color Renderer::computeReflection(const HitInfo& info, int depth) const
 {
     // R = D - 2*(D.N)*N
@@ -91,9 +79,7 @@ Color Renderer::computeReflection(const HitInfo& info, int depth) const
     return Color(0, 0, 0);
 }
 
-// ---------------------------------------------------------------------------
-// Réfraction (could) — stub
-// ---------------------------------------------------------------------------
+
 Color Renderer::computeRefraction(const HitInfo& info, int depth) const
 {
     // Loi de Snell : r = n1/n2, sinT² = r²*(1 - cosI²)

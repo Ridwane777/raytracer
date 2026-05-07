@@ -57,11 +57,6 @@ Color Cylinder::getColor(const Point3D& point) const
 
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
-    // Cles alignees avec SceneBuilder :
-    //   "x","y","z"     -> position du centre
-    //   "r"             -> rayon
-    //   "height"        -> hauteur
-    //   "color_r/g/b"   -> couleur (0.0 - 1.0)
     Point3D center(params.at("x"), params.at("y"), params.at("z"));
     double  radius = params.at("r");
     double  height = params.at("height");

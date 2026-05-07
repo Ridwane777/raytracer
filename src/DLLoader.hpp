@@ -21,9 +21,6 @@ public:
                  const std::string& destroyfunc, Args... args)
     {
         clearlib();
-
-        // RTLD_GLOBAL : expose les symboles du binaire principal aux plugins
-        // (nécessaire car Point3D, Vector3D, etc. sont dans le binaire, pas dans les .so)
         _handle = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (!_handle)
             throw DLLoaderError(dlerror());
