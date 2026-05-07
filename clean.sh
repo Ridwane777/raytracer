@@ -12,6 +12,7 @@ rm -f CMakeCache.txt
 rm -f cmake_install.cmake
 rm -f Makefile
 rm -f compile_commands.json
+rm -f *.ppm
 
 # Supprime les plugins compilés
 if [ -d "plugins" ]; then

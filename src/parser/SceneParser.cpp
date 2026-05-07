@@ -148,25 +148,28 @@ PlaneConfig SceneParser::parsePlane(const libconfig::Setting &s)
     return plane;
 }
 
-CylinderConfig SceneParser::parseCylinder(const libconfig::Setting &s)
+CylinderConfig SceneParser::parseCylinder(const libconfig::Setting& s)
 {
     CylinderConfig cyl;
-    cyl.x     = getDouble(s, "x");
-    cyl.y     = getDouble(s, "y");
-    cyl.z     = getDouble(s, "z");
-    cyl.r     = getDouble(s, "r", 1.0);
-    cyl.color = parseColor(s);
+    cyl.x      = getDouble(s, "x");
+    cyl.y      = getDouble(s, "y");
+    cyl.z      = getDouble(s, "z");
+    cyl.r      = getDouble(s, "r", 1.0);
+    cyl.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
+    cyl.color  = parseColor(s);
     return cyl;
 }
 
-ConeConfig SceneParser::parseCone(const libconfig::Setting &s)
+ConeConfig SceneParser::parseCone(const libconfig::Setting& s)
 {
     ConeConfig cone;
-    cone.x     = getDouble(s, "x");
-    cone.y     = getDouble(s, "y");
-    cone.z     = getDouble(s, "z");
-    cone.r     = getDouble(s, "r", 1.0);
-    cone.color = parseColor(s);
+    cone.x      = getDouble(s, "x");
+    cone.y      = getDouble(s, "y");
+    cone.z      = getDouble(s, "z");
+    cone.r      = getDouble(s, "r", 1.0);
+    cone.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
+    cone.angle  = getDouble(s, "angle", 30.0);  // demi-angle, defaut = 30 degres
+    cone.color  = parseColor(s);
     return cone;
 }
 
