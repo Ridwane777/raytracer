@@ -2,15 +2,18 @@
 #define TRANSFORM_HPP_
 #include "../interfaces/IPrimitive.hpp"
 #include "../math/Matrix4x4.hpp"
+#include <memory>
 
 class Transform : public IPrimitive {
 private:
-    IPrimitive* _wrapped;
-    Matrix4x4   _worldToLocal; // inverse de la matrice de transformation
+    // shared_ptr : le Transform est copropriétaire de la primitive wrappée.
+    // Cela évite les dangling pointers si la primitive est détruite ailleurs.
+    std::shared_ptr<IPrimitive> _wrapped;
+    Matrix4x4   _worldToLocal;
     Matrix4x4   _localToWorld;
 
 public:
-    Transform(IPrimitive* primitive, const Matrix4x4& transform);
+    Transform(std::shared_ptr<IPrimitive> primitive, const Matrix4x4& transform);
     Transform() = default;
     ~Transform() = default;
     std::optional<double> hits(const Ray& ray) const override;

@@ -1,6 +1,6 @@
 #include "Transform.hpp"
 
-Transform::Transform(IPrimitive* primitive, const Matrix4x4& transform) 
+Transform::Transform(std::shared_ptr<IPrimitive> primitive, const Matrix4x4& transform) 
     : _wrapped(primitive), _worldToLocal(transform.inverse()), _localToWorld(transform)
 {}
 

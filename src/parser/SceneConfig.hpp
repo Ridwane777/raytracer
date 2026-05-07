@@ -45,6 +45,7 @@ struct CylinderConfig
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
+    double height = 1.0;   // hauteur du cylindre
     Colors color;
 };
 
@@ -52,6 +53,8 @@ struct ConeConfig
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
+    double height = 1.0;   // hauteur du cône
+    double angle  = 30.0;  // demi-angle au sommet (en degrés)
     Colors color;
 };
 
