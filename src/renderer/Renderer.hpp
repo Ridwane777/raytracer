@@ -33,6 +33,9 @@ private:
 
     // Pour la réfraction (could) — à implémenter quand maxDepth > 0
     Color computeRefraction(const HitInfo& info, int depth) const;
+
+    // Affiche la barre de progression dans la console
+    void printProgress(int completedRows, int totalRows) const;
 };
 
 #endif /* !RENDERER_HPP_ */
