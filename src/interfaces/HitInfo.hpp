@@ -4,9 +4,9 @@
 
 // Informations sur le point touché, passées à chaque lumière.
 struct HitInfo {
-    Point3D  point;     // point d'intersection dans la scène
-    Vector3D normal;    // normale de la surface en ce point
-    Vector3D viewDir;   // direction normalisée vers la caméra (pour Phong)
+    Point3D  point;
+    Vector3D normal;
+    Vector3D viewDir;
 };
 
 #endif /* !HITINFO_HPP_ */

@@ -7,7 +7,6 @@
 class Transform : public IPrimitive {
 private:
     // shared_ptr : le Transform est copropriétaire de la primitive wrappée.
-    // Cela évite les dangling pointers si la primitive est détruite ailleurs.
     std::shared_ptr<IPrimitive> _wrapped;
     Matrix4x4   _worldToLocal;
     Matrix4x4   _localToWorld;

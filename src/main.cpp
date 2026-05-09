@@ -28,22 +28,12 @@ int main(int ac, char** av)
 
         if (arg.find(".cfg") == std::string::npos)
             throw Error("Unknown argument or file format (expected .cfg).");
-
-        // 1. Parse le fichier .cfg → données brutes
         SceneParser parser;
         SceneConfig config = parser.parse(arg);
-
-        // 2. Construire la scène (dlopen les plugins depuis ./plugins)
         SceneBuilder builder("plugins");
         Scene scene = builder.build(config);
-
-
-
-        // 3. Lancer le rendu (depth=0 : rendu plat)
         Renderer renderer(scene, 0);
         auto pixels = renderer.render();
-
-        // 4. Écrire le fichier PPM
         PPMWriter::write("output.ppm", pixels);
 
         std::cout << "Render complete → output.ppm ("
