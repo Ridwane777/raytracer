@@ -1,7 +1,7 @@
 #include "PointLight.hpp"
 
-PointLight::PointLight(const Point3D& position, double intensity)
-    : _position(position), _intensity(intensity)
+PointLight::PointLight(const Point3D& position, double intensity, const Color& color)
+    : _position(position), _intensity(intensity), _color(color)
 {}
 
 Color PointLight::computeContribution(const HitInfo& hit, const IPrimitive& scene) const
@@ -21,7 +21,7 @@ Color PointLight::computeContribution(const HitInfo& hit, const IPrimitive& scen
     if (diff < 0.0) diff = 0.0;
     
     double contribution = _intensity * diff;
-    return Color(contribution, contribution, contribution);
+    return Color(_color.r * contribution, _color.g * contribution, _color.b * contribution);
 }
 
 extern "C" ILight* createLight(const std::map<std::string, double>& params)
@@ -30,8 +30,11 @@ extern "C" ILight* createLight(const std::map<std::string, double>& params)
     double y = params.count("y") ? params.at("y") : 0.0;
     double z = params.count("z") ? params.at("z") : 0.0;
     double intensity = params.count("intensity") ? params.at("intensity") : 0.6;
+    double r = params.count("color_r") ? params.at("color_r") : 1.0;
+    double g = params.count("color_g") ? params.at("color_g") : 1.0;
+    double b = params.count("color_b") ? params.at("color_b") : 1.0;
 
-    return new PointLight(Point3D(x, y, z), intensity);
+    return new PointLight(Point3D(x, y, z), intensity, Color(r, g, b));
 }
 
 extern "C" void destroyLight(ILight* light)

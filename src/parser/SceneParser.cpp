@@ -212,6 +212,7 @@ PointLight SceneParser::parsePointLight(const libconfig::Setting &s)
     light.x = getDouble(s, "x");
     light.y = getDouble(s, "y");
     light.z = getDouble(s, "z");
+    light.color = parseColor(s);
     return light;
 }
 
@@ -221,6 +222,7 @@ DirectionalLight SceneParser::parseDirectionalLight(const libconfig::Setting &s)
     light.x = getDouble(s, "x");
     light.y = getDouble(s, "y");
     light.z = getDouble(s, "z");
+    light.color = parseColor(s);
     return light;
 }
 
