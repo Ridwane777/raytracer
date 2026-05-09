@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PROJECT_COMPILE_FLAGS -Wall -Wextra -Werror -fno-gnu-unique)
 
 # --- Plugins ---
-set(PLUGINS sphere plane cylinder cone ambient directional)
+set(PLUGINS sphere plane cylinder cone ambient directional point)
 
 foreach(PLUGIN ${PLUGINS})
     file(GLOB PLUGIN_SOURCES "plugins/${PLUGIN}/*.cpp")
