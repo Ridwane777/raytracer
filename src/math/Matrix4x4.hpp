@@ -14,6 +14,7 @@ public:
     static Matrix4x4 rotationY(double deg);
     static Matrix4x4 rotationZ(double deg);
     static Matrix4x4 scale(double sx, double sy, double sz);
+    static Matrix4x4 shear(double xy, double xz, double yx, double yz, double zx, double zy);
 
     Matrix4x4 operator*(const Matrix4x4& other) const;
     Matrix4x4 inverse() const;

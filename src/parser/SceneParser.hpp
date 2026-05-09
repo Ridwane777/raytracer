@@ -15,6 +15,7 @@ private:
    CameraConfig parseCamera(const libconfig::Setting &root);
     Resolution parseResolution(const libconfig::Setting &cam);
     Vec3 parseVec3(const libconfig::Setting &setting);
+    void parseTransformData(const libconfig::Setting &s, TransformData &t);
 
     PrimitivesConfig parsePrimitives(const libconfig::Setting &root);
     SphereConfig parseSphere(const libconfig::Setting &s);

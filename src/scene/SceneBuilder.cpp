@@ -54,8 +54,8 @@ void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("sphere"), params);
-        auto translated = std::make_shared<Transform>(
-            base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
+        Matrix4x4 tr = buildTransformMatrix(cfg, cfg.x, cfg.y, cfg.z);
+        auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         std::cerr << "[Sphere] " << e.what() << "\n";
@@ -80,8 +80,8 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
     double tz = (axisVal == 2.0) ? cfg.position : 0.0;
     try {
         auto base = _primitiveFactory.create(pluginPath("plane"), params);
-        auto translated = std::make_shared<Transform>(
-            base, Matrix4x4::translation(Vector3D(tx, ty, tz)));
+        Matrix4x4 tr = buildTransformMatrix(cfg, tx, ty, tz);
+        auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         std::cerr << "[Plane] " << e.what() << "\n";
@@ -102,8 +102,8 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cylinder"), params);
-        auto translated = std::make_shared<Transform>(
-            base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
+        Matrix4x4 tr = buildTransformMatrix(cfg, cfg.x, cfg.y, cfg.z);
+        auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         std::cerr << "[Cylinder] " << e.what() << "\n";
@@ -125,8 +125,8 @@ void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cone"), params);
-        auto translated = std::make_shared<Transform>(
-            base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
+        Matrix4x4 tr = buildTransformMatrix(cfg, cfg.x, cfg.y, cfg.z);
+        auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         std::cerr << "[Cone] " << e.what() << "\n";
@@ -171,4 +171,14 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
 std::string SceneBuilder::pluginPath(const std::string& name) const
 {
     return _pluginDir + "/raytracer_" + name + ".so";
+}
+
+Matrix4x4 SceneBuilder::buildTransformMatrix(const TransformData& t, double x, double y, double z) const
+{
+    return Matrix4x4::translation(Vector3D(x, y, z)) *
+           Matrix4x4::rotationZ(t.rotation.z) *
+           Matrix4x4::rotationY(t.rotation.y) *
+           Matrix4x4::rotationX(t.rotation.x) *
+           Matrix4x4::shear(t.sh_xy, t.sh_xz, t.sh_yx, t.sh_yz, t.sh_zx, t.sh_zy) *
+           Matrix4x4::scale(t.scale.x, t.scale.y, t.scale.z);
 }

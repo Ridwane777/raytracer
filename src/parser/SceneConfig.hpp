@@ -28,21 +28,30 @@ struct CameraConfig
     int antialiasing = 1;
 };
 
-struct SphereConfig
+struct TransformData
+{
+    Vec3 scale = {1.0, 1.0, 1.0};
+    double sh_xy = 0.0, sh_xz = 0.0;
+    double sh_yx = 0.0, sh_yz = 0.0;
+    double sh_zx = 0.0, sh_zy = 0.0;
+    Vec3 rotation = {0.0, 0.0, 0.0};
+};
+
+struct SphereConfig : public TransformData
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
     Colors color;
 };
 
-struct PlaneConfig
+struct PlaneConfig : public TransformData
 {
     std::string axis = "Y";
     double position = 0;
     Colors color;
 };
 
-struct CylinderConfig
+struct CylinderConfig : public TransformData
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
@@ -50,7 +59,7 @@ struct CylinderConfig
     Colors color;
 };
 
-struct ConeConfig
+struct ConeConfig : public TransformData
 {
     double x = 0, y = 0, z = 0;
     double r = 1;

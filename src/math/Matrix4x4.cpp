@@ -70,6 +70,18 @@ Matrix4x4 Matrix4x4::scale(double sx, double sy, double sz) {
     return scl;
 }
 
+Matrix4x4 Matrix4x4::shear(double xy, double xz, double yx, double yz, double zx, double zy) {
+    Matrix4x4 shr;
+
+    shr.m[0][1] = xy;
+    shr.m[0][2] = xz;
+    shr.m[1][0] = yx;
+    shr.m[1][2] = yz;
+    shr.m[2][0] = zx;
+    shr.m[2][1] = zy;
+    return shr;
+}
+
 Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const {
     Matrix4x4 res;
 
