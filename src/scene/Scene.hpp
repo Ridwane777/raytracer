@@ -19,16 +19,10 @@ public:
     Scene() = default;
     explicit Scene(const Camera& cam);
     ~Scene() = default;
-
-    // Ajoute une primitive dans la scène.
-    // Le shared_ptr transféré garde ownership → la .so reste chargée.
     void addPrimitive(std::shared_ptr<IPrimitive> primitive);
-
-    // Ajoute une lumière dans la scène.
     void addLight(std::shared_ptr<ILight> light);
 
 private:
-    // Garde les shared_ptr vivants aussi longtemps que la scène existe.
     std::vector<std::shared_ptr<IPrimitive>> _ownedPrimitives;
 };
 

@@ -24,7 +24,7 @@ Matrix4x4 Matrix4x4::translation(const Vector3D& t) {
 
 Matrix4x4 Matrix4x4::rotationX(double deg) {
     Matrix4x4 rot;
-    double radians = deg * M_PI / 180.0; // Conversion degrés -> radians
+    double radians = deg * M_PI / 180.0;
     double c = cos(radians);
     double s = sin(radians);
 
@@ -37,7 +37,7 @@ Matrix4x4 Matrix4x4::rotationX(double deg) {
 
 Matrix4x4 Matrix4x4::rotationY(double deg) {
     Matrix4x4 rot;
-    double radians = deg * M_PI / 180.0; // Conversion degrés -> radians
+    double radians = deg * M_PI / 180.0;
     double c = cos(radians);
     double s = sin(radians);
 
@@ -50,7 +50,7 @@ Matrix4x4 Matrix4x4::rotationY(double deg) {
 
 Matrix4x4 Matrix4x4::rotationZ(double deg) {
     Matrix4x4 rot;
-    double radians = deg * M_PI / 180.0; // Conversion degrés -> radians
+    double radians = deg * M_PI / 180.0;
     double c = cos(radians);
     double s = sin(radians);
 

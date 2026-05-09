@@ -1,13 +1,13 @@
 #include "Camera.hpp"
 #include "../math/Matrix4x4.hpp"
 
-Camera::Camera() : position(), rotation(), width(0), height(0), fov(0.0) 
+Camera::Camera() : position(), rotation(), width(0), height(0), fov(0.0), antialiasing(1)
 {
 }
 
 Camera::Camera(const Point3D& position, const Vector3D& rotation,
-           int width, int height, double fov) : position(position), rotation(rotation), 
-           width(width), height(height), fov(fov)
+           int width, int height, double fov, int antialiasing) : position(position), rotation(rotation), 
+           width(width), height(height), fov(fov), antialiasing(antialiasing)
 {
 }
 
@@ -16,7 +16,8 @@ Camera::Camera(const Camera& other)
       rotation(other.rotation), 
       width(other.width), 
       height(other.height), 
-      fov(other.fov)
+      fov(other.fov),
+      antialiasing(other.antialiasing)
 {
 }
 
@@ -27,6 +28,7 @@ Camera& Camera::operator=(const Camera& other) {
         width = other.width;
         height = other.height;
         fov = other.fov;
+        antialiasing = other.antialiasing;
     }
     return *this;
 }
@@ -53,11 +55,11 @@ Rectangle3D Camera::getScreen() const {
     return Rectangle3D(origin, bottom_side, left_side);
 }
 
-Ray Camera::getRayForPixel(int px, int py) const {
+Ray Camera::getRayForPixel(double px, double py) const {
     Rectangle3D screen = getScreen();
 
-    double u = (double)px / (double)(width  - 1);
-    double v = (double)py / (double)(height - 1);
+    double u = px / (double)(width  - 1);
+    double v = py / (double)(height - 1);
 
     Point3D  target    = screen.pointAt(u, v);
     Vector3D direction = (target - position).normalize();

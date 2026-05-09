@@ -25,6 +25,7 @@ struct CameraConfig
     Vec3 position;
     Vec3 rotation;
     double fieldOfView = 72.0;
+    int antialiasing = 1;
 };
 
 struct SphereConfig

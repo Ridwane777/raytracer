@@ -29,9 +29,8 @@ Camera SceneBuilder::buildCamera(const CameraConfig& cfg)
     Vector3D rot(cfg.rotation.x, cfg.rotation.y, cfg.rotation.z);
 
     return Camera(pos, rot,
-                  cfg.resolution.width,
-                  cfg.resolution.height,
-                  cfg.fieldOfView);
+                  cfg.resolution.width, cfg.resolution.height,
+                  cfg.fieldOfView, cfg.antialiasing);
 }
 
 void SceneBuilder::buildPrimitives(Scene& scene, const PrimitivesConfig& cfg)
@@ -44,7 +43,6 @@ void SceneBuilder::buildPrimitives(Scene& scene, const PrimitivesConfig& cfg)
 
 void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
 {
-    // 1. La sphère est créée à l'ORIGINE (0, 0, 0)
     std::map<std::string, double> params = {
         {"x",       0.0},
         {"y",       0.0},
@@ -56,7 +54,6 @@ void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("sphere"), params);
-        // 2. Le Decorator Transform applique la matrice de translation
         auto translated = std::make_shared<Transform>(
             base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
         scene.addPrimitive(translated);
@@ -71,7 +68,6 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
     if (cfg.axis == "X" || cfg.axis == "x") axisVal = 0.0;
     else if (cfg.axis == "Z" || cfg.axis == "z") axisVal = 2.0;
 
-    // 1. Le plan est créé à la position 0 de son axe
     std::map<std::string, double> params = {
         {"axis",     axisVal},
         {"position", 0.0},
@@ -79,7 +75,6 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
         {"color_g",  static_cast<double>(cfg.color.g) / 255.0},
         {"color_b",  static_cast<double>(cfg.color.b) / 255.0}
     };
-    // 2. La translation le place à la bonne position le long de son axe
     double tx = (axisVal == 0.0) ? cfg.position : 0.0;
     double ty = (axisVal == 1.0) ? cfg.position : 0.0;
     double tz = (axisVal == 2.0) ? cfg.position : 0.0;
@@ -95,7 +90,6 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
 
 void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
 {
-    // 1. Cylindre créé à l'ORIGINE
     std::map<std::string, double> params = {
         {"x",       0.0},
         {"y",       0.0},
@@ -108,7 +102,6 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cylinder"), params);
-        // 2. Translation vers la position finale
         auto translated = std::make_shared<Transform>(
             base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
         scene.addPrimitive(translated);
@@ -119,7 +112,6 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
 
 void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
 {
-    // 1. Cône créé à l'ORIGINE
     std::map<std::string, double> params = {
         {"x",       0.0},
         {"y",       0.0},
@@ -133,7 +125,6 @@ void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cone"), params);
-        // 2. Translation vers la position finale
         auto translated = std::make_shared<Transform>(
             base, Matrix4x4::translation(Vector3D(cfg.x, cfg.y, cfg.z)));
         scene.addPrimitive(translated);

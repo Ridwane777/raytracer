@@ -7,10 +7,11 @@
 class Camera {
 public:
     Point3D  position;
-    Vector3D rotation; // angles en degrés (x, y, z)
+    Vector3D rotation;
     int      width;
     int      height;
-    double   fov;      // en degrés
+    double   fov;
+    int      antialiasing;
 
     Camera();
     Camera(const Camera& other);
@@ -18,17 +19,9 @@ public:
     ~Camera() = default;
 
     Camera(const Point3D& position, const Vector3D& rotation,
-           int width, int height, double fov);
-
-    // Construit le Rectangle3D du plan image.
-    // Place le plan à distance 1 devant la caméra.
-    // bottom_side et left_side sont calculés depuis le FOV et le ratio.
+           int width, int height, double fov, int antialiasing = 1);
     Rectangle3D getScreen() const;
-
-    // Génère le rayon pour le pixel (px, py).
-    // u = px / (width-1), v = py / (height-1)
-    // direction = screen.pointAt(u, v) - position
-    Ray getRayForPixel(int px, int py) const;
+    Ray getRayForPixel(double px, double py) const;
 };
 
 #endif /* !CAMERA_HPP_ */

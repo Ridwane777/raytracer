@@ -4,9 +4,9 @@
 
 class Rectangle3D {
 public:
-    Point3D  origin;      // coin bas-gauche
-    Vector3D bottom_side; // vecteur vers le coin bas-droit
-    Vector3D left_side;   // vecteur vers le coin haut-gauche
+    Point3D  origin;
+    Vector3D bottom_side;
+    Vector3D left_side;
 
     Rectangle3D() = default;
     ~Rectangle3D() = default;

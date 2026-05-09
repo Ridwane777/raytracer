@@ -57,6 +57,8 @@ CameraConfig SceneParser::parseCamera(const libconfig::Setting &root)
         cam.position = parseVec3(c["position"]);
     if (c.exists("rotation"))
         cam.rotation = parseVec3(c["rotation"]);
+        
+    cam.antialiasing = static_cast<int>(getDouble(c, "antialiasing", 1.0));
 
     return cam;
 }
