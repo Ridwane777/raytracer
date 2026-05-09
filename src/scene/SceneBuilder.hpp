@@ -5,6 +5,7 @@
 #include "../parser/SceneConfig.hpp"
 #include "../factory/PrimitiveFactory.hpp"
 #include "../factory/LightFactory.hpp"
+#include "../math/Matrix4x4.hpp"
 
 #include <string>
 
@@ -30,6 +31,8 @@ private:
     void addCone    (Scene& scene, const ConeConfig&     cfg);
 
     void buildLights(Scene& scene, const LightsConfig& cfg);
+
+    Matrix4x4 buildTransformMatrix(const TransformData& t, double x, double y, double z) const;
 
     std::string pluginPath(const std::string& name) const;
 };

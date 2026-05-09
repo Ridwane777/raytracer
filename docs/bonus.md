@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 5.5 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 6.5 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -16,6 +16,8 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Multithreading** | `+ 1.0` | Découpage du rendu en blocs et calcul parallèle sur tous les cœurs du CPU via `std::thread`. |
 | **Progress Bar** | `N/A` | Animation fluide de progression en pourcentage affichée sur `stderr` durant le rendu. |
 | **Antialiasing supersampling** | `+ 0.5` | Lancer de plusieurs rayons par pixel avec décalage aléatoire pour lisser les bords des objets. |
+| **Scale** | `+ 0.5` | Ajout d'une matrice d'échelle `Matrix4x4::scale()` applicable dynamiquement à toute primitive depuis la configuration. |
+| **Shear** | `+ 0.5` | Implémentation de `Matrix4x4::shear(xy, xz, ...)` et application en cascade dans le `Transform` decorator. |
 
 ---
 
@@ -30,8 +32,7 @@ Voici une sélection des bonus les plus rapides à intégrer avec l'architecture
 *(Plus de tâches rapides dans cette catégorie)*
 
 ### 3. Mathématiques & Lumières
-* **Scale (+0.5 pt)** : Facile. La fonction `Matrix4x4::scale()` existe, il faut juste lire le paramètre dans le parser.
-* **Shear (+0.5 pt)** : Facile. Similaire au Scale, implique d'ajouter `Matrix4x4::shear()` et de le lire dans la configuration.
+*(Scale et Shear ont été ajoutés !)*
 * **Colored light (+0.5 pt)** : Facile. Ajouter un vecteur `Color` aux lumières et multiplier avec la couleur de la primitive.
 * **Transparency (+0.5 pt)** : Facile. Rendu de verre plat sans réfraction, via calcul du rayon passant au travers de l'objet.
 

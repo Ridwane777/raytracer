@@ -137,6 +137,7 @@ SphereConfig SceneParser::parseSphere(const libconfig::Setting &s)
     sphere.z     = getDouble(s, "z");
     sphere.r     = getDouble(s, "r", 1.0);
     sphere.color = parseColor(s);
+    parseTransformData(s, sphere);
     return sphere;
 }
 
@@ -147,6 +148,7 @@ PlaneConfig SceneParser::parsePlane(const libconfig::Setting &s)
         plane.axis = s["axis"].c_str();
     plane.position = getDouble(s, "position");
     plane.color    = parseColor(s);
+    parseTransformData(s, plane);
     return plane;
 }
 
@@ -159,6 +161,7 @@ CylinderConfig SceneParser::parseCylinder(const libconfig::Setting& s)
     cyl.r      = getDouble(s, "r", 1.0);
     cyl.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
     cyl.color  = parseColor(s);
+    parseTransformData(s, cyl);
     return cyl;
 }
 
@@ -172,6 +175,7 @@ ConeConfig SceneParser::parseCone(const libconfig::Setting& s)
     cone.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
     cone.angle  = getDouble(s, "angle", 30.0);  // demi-angle, defaut = 30 degres
     cone.color  = parseColor(s);
+    parseTransformData(s, cone);
     return cone;
 }
 
@@ -218,4 +222,29 @@ DirectionalLight SceneParser::parseDirectionalLight(const libconfig::Setting &s)
     light.y = getDouble(s, "y");
     light.z = getDouble(s, "z");
     return light;
+}
+
+void SceneParser::parseTransformData(const libconfig::Setting &s, TransformData &t)
+{
+    if (s.exists("scale")) {
+        const libconfig::Setting &sc = s["scale"];
+        t.scale.x = getDouble(sc, "x", 1.0);
+        t.scale.y = getDouble(sc, "y", 1.0);
+        t.scale.z = getDouble(sc, "z", 1.0);
+    }
+    if (s.exists("rotation")) {
+        const libconfig::Setting &rot = s["rotation"];
+        t.rotation.x = getDouble(rot, "x", 0.0);
+        t.rotation.y = getDouble(rot, "y", 0.0);
+        t.rotation.z = getDouble(rot, "z", 0.0);
+    }
+    if (s.exists("shear")) {
+        const libconfig::Setting &sh = s["shear"];
+        t.sh_xy = getDouble(sh, "xy", 0.0);
+        t.sh_xz = getDouble(sh, "xz", 0.0);
+        t.sh_yx = getDouble(sh, "yx", 0.0);
+        t.sh_yz = getDouble(sh, "yz", 0.0);
+        t.sh_zx = getDouble(sh, "zx", 0.0);
+        t.sh_zy = getDouble(sh, "zy", 0.0);
+    }
 }
