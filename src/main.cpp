@@ -32,7 +32,7 @@ int main(int ac, char** av)
         SceneConfig config = parser.parse(arg);
         SceneBuilder builder("plugins");
         Scene scene = builder.build(config);
-        Renderer renderer(scene, 0);
+        Renderer renderer(scene, 4);
         auto pixels = renderer.render();
         PPMWriter::write("output.ppm", pixels);
 
