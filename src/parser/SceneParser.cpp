@@ -249,4 +249,7 @@ void SceneParser::parseTransformData(const libconfig::Setting &s, TransformData 
         t.sh_zx = getDouble(sh, "zx", 0.0);
         t.sh_zy = getDouble(sh, "zy", 0.0);
     }
+    t.transparency = getDouble(s, "transparency", t.transparency);
+    t.refractiveIndex = getDouble(s, "refractiveIndex", t.refractiveIndex);
+    t.reflectivity = getDouble(s, "reflectivity", t.reflectivity);
 }

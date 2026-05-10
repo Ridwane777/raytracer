@@ -35,7 +35,7 @@ Ce document centralise toutes les formules mathématiques utilisées actuellemen
 
 ---
 
-## 2. Formules à venir (Pour l'implémentation future)
+## 2. Formules des Fonctionnalités Avancées
 
 ### A. Intersections Géométriques (Primitives)
 Le but de l'intersection est de trouver le plus petit `t > 0` tel que `Rayon(t) = Surface de l'objet`.
@@ -55,7 +55,7 @@ Si le plan est défini par une normale `N` et passe par un point `A` :
 * `t = ((A - OrigineRayon) . N) / (DirectionRayon . N)`
 * Si `(DirectionRayon . N) == 0` : Le rayon est parallèle au plan (pas d'intersection).
 
-**Le Cylindre et le Cône (Should) :**
+**Le Cylindre et le Cône (Implémenté) :**
 Ils se résolvent également avec une équation quadratique (`at² + bt + c = 0`), mais avec des coefficients `a, b, c` qui ignorent l'axe directeur du cylindre/cône (généralement l'axe Y dans l'espace local).
 
 ---
@@ -75,13 +75,13 @@ Détermine le reflet du soleil sur une pomme brillante.
 * **Vecteur de réflexion R** : `R = 2 * (Normale . DirectionLumière) * Normale - DirectionLumière`
 * `Intensité_Spéculaire = Max(0, Vue . R) ^ Brillance` (où Vue est la direction vers la caméra, et Brillance est une constante comme 32 ou 64).
 
-**Ombres portées (Drop Shadows) (Should) :**
+**Ombres portées (Drop Shadows) (Implémenté) :**
 Avant d'ajouter la couleur d'une lumière, on lance un "Rayon d'Ombre" (`Shadow Ray`) depuis le point d'intersection vers la source lumineuse.
 * Si `PrimitiveList->hits(ShadowRay)` renvoie un résultat, alors un objet bloque la lumière -> La contribution de cette lumière est 0 (Noir).
 
 ---
 
-### C. Reflets et Réfraction (Could - Moteur Récursif)
+### C. Reflets et Réfraction (Implémenté - Moteur Récursif)
 
 **Réflexion (Miroir) :**
 Le rayon rebondit sur l'objet et repart dans la scène.
@@ -95,3 +95,21 @@ La lumière traverse l'objet et change de direction selon un indice de réfracti
 * `sinT² = r² * (1 - cosI²)`
 * Si `sinT² > 1` : Réflexion totale interne (ça devient un miroir).
 * Sinon, **Nouvelle Direction** : `T = r * DirectionRayon + (r * cosI - sqrt(1 - sinT²)) * Normale`
+* **Mélange Final (Alpha Blending)** : `Couleur = (CouleurBase * (1 - reflectivite)) + (CouleurReflechie * reflectivite)`
+
+---
+
+### D. Triangles et Modèles 3D (À venir)
+
+**Algorithme de Möller-Trumbore (Intersection Rayon-Triangle) :**
+Permet de calculer très rapidement l'intersection sans pré-calculer le plan du triangle.
+Pour un triangle défini par ses trois sommets `A`, `B`, `C` :
+1. **Arêtes** : `E1 = B - A`, `E2 = C - A`
+2. **Vecteur P** : `P = DirectionRayon x E2`
+3. **Déterminant** : `det = E1 . P`
+   * Si `-EPSILON < det < EPSILON`, le rayon est parallèle au triangle.
+4. **Vecteur T** : `T = OrigineRayon - A`
+5. **Coordonnée U barycentrique** : `u = (T . P) / det`. Si `u < 0` ou `u > 1`, le rayon rate le triangle.
+6. **Vecteur Q** : `Q = T x E1`
+7. **Coordonnée V barycentrique** : `v = (DirectionRayon . Q) / det`. Si `v < 0` ou `u + v > 1`, le rayon rate le triangle.
+8. **Distance t** : `t = (E2 . Q) / det`. Si `t > EPSILON`, il y a intersection !

@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include <cmath>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -43,7 +44,7 @@ std::vector<std::vector<Color>> Renderer::render() const {
 }
 
 Color Renderer::computeColor(const Ray &ray, int depth) const {
-  // Arrêt de la récursion (reflets/réfraction désactivés à depth=0)
+  // Arrêt de la récursion (reflets/réfraction désactivés à depth>_maxDepth)
   if (depth > _maxDepth)
     return Color(0, 0, 0);
 
@@ -61,8 +62,25 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
   HitInfo info{hitPoint, normal, viewDir};
   Color lighting = computeDirectLighting(*closest, info);
   Color objColor = closest->getColor(hitPoint);
+  double opacity = closest->getOpacity();
+  double reflectivity = closest->getReflectivity();
 
-  return (objColor * lighting).clamp();
+  Color baseColor(0, 0, 0);
+
+  if (opacity >= 1.0 || depth == _maxDepth) {
+    baseColor = (objColor * lighting);
+  } else {
+    Color directColor = (objColor * lighting) * opacity;
+    Color refractedColor = computeRefraction(*closest, info, depth + 1) * (1.0 - opacity);
+    baseColor = directColor + refractedColor;
+  }
+
+  if (reflectivity > 0.0 && depth < _maxDepth) {
+    Color reflectedColor = computeReflection(info, depth + 1);
+    return (baseColor * (1.0 - reflectivity) + reflectedColor * reflectivity).clamp();
+  }
+
+  return baseColor.clamp();
 }
 
 Color Renderer::computeDirectLighting(const IPrimitive &primitive,
@@ -77,19 +95,34 @@ Color Renderer::computeDirectLighting(const IPrimitive &primitive,
 }
 
 Color Renderer::computeReflection(const HitInfo &info, int depth) const {
-  // R = D - 2*(D.N)*N
-  // Color reflected = computeColor(Ray(info.point + info.normal * 1e-4, R),
-  // depth + 1);
-  (void)info;
-  (void)depth;
-  return Color(0, 0, 0);
+  Vector3D incident = (info.viewDir * -1.0).normalize();
+  Vector3D reflectDir = incident - info.normal * 2.0 * incident.dot(info.normal);
+  Ray reflectionRay(info.point + info.normal * 1e-4, reflectDir.normalize());
+  return computeColor(reflectionRay, depth);
 }
 
-Color Renderer::computeRefraction(const HitInfo &info, int depth) const {
-  // Loi de Snell : r = n1/n2, sinT² = r²*(1 - cosI²)
-  (void)info;
-  (void)depth;
-  return Color(0, 0, 0);
+Color Renderer::computeRefraction(const IPrimitive &primitive, const HitInfo &info, int depth) const {
+  double n1 = 1.0;
+  double n2 = primitive.getRefractiveIndex();
+
+  Vector3D incident = (info.viewDir * -1.0).normalize();
+  Vector3D normal = info.normal;
+  double cosI = normal.dot(incident);
+
+  if (cosI < 0.0) {
+    cosI = -cosI;
+    normal = normal * -1.0;
+    std::swap(n1, n2);
+  }
+
+  double ratio = n1 / n2;
+  double k = 1.0 - ratio * ratio * (1.0 - cosI * cosI);
+  if (k < 0.0)
+    return computeReflection(info, depth);
+
+  Vector3D refractedDir = incident * ratio + normal * (ratio * cosI - std::sqrt(k));
+  Ray refractedRay(info.point + refractedDir * 1e-4, refractedDir.normalize());
+  return computeColor(refractedRay, depth);
 }
 
 void Renderer::printProgress(int completedRows, int totalRows) const {

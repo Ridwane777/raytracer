@@ -35,6 +35,9 @@ struct TransformData
     double sh_yx = 0.0, sh_yz = 0.0;
     double sh_zx = 0.0, sh_zy = 0.0;
     Vec3 rotation = {0.0, 0.0, 0.0};
+    double transparency = 0.0;
+    double refractiveIndex = 1.0;
+    double reflectivity = 0.0;
 };
 
 struct SphereConfig : public TransformData

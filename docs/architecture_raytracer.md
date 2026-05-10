@@ -227,6 +227,11 @@ public:
     // Couleur flat de la primitive au point donné.
     // Le point est fourni pour les textures procédurales (could).
     virtual Color getColor(const Point3D& point) const = 0;
+
+    // Paramètres optiques avancés (pour Réfraction / Réflexion)
+    virtual double getOpacity() const = 0;
+    virtual double getRefractiveIndex() const = 0;
+    virtual double getReflectivity() const = 0;
 };
 // Pas de translate() ici : les transformations passent par Transform (Decorator).
 ```
@@ -279,6 +284,11 @@ public:
     Vector3D getNormal(const Point3D& point) const override;
 
     Color getColor(const Point3D& point) const override;
+
+    // Propagation des paramètres optiques vers _wrapped
+    double getOpacity() const override;
+    double getRefractiveIndex() const override;
+    double getReflectivity() const override;
 };
 ```
 
@@ -371,6 +381,11 @@ public:
 
     // Retourne la couleur de l'enfant le plus proche.
     Color getColor(const Point3D& point) const override;
+
+    // Implémentation par défaut pour satisfaire l'interface pure
+    double getOpacity() const override;
+    double getRefractiveIndex() const override;
+    double getReflectivity() const override;
 
     // Accès à l'enfant touché (utile pour récupérer couleur + normale dans le Renderer).
     const IPrimitive* getClosest(const Ray& ray) const;
@@ -671,8 +686,7 @@ Scene
 | Rotation (should) | Transform + Matrix4x4 existent déjà | IPrimitive, primitives concrètes |
 | Drop shadows (should) | DirectionalLight envoie shadowRay via `scene` | ILight signature déjà prévue |
 | Phong (could) | Utilise `viewDir` déjà dans HitInfo | ILight signature déjà prévue |
-| Reflection (could) | `computeReflection()` dans Renderer, `_maxDepth > 0` | IPrimitive, ILight |
-| Refraction (could) | `computeRefraction()` dans Renderer | IPrimitive, ILight |
+| Reflection / Refraction (could) | `computeReflection/Refraction()` dans Renderer, extension de `IPrimitive` avec `getOpacity`, `getRefractiveIndex`, `getReflectivity` | Architecture globale (via Decorator Transform) |
 | Multithreading (could) | Renderer stateless → paralléliser `render()` par bandes | Tout le reste |
 | Textures (could) | `getColor(point)` reçoit déjà le point | IPrimitive signature déjà prévue |
 | Scale (could) | Matrix4x4 supporte déjà scale | Transform existe déjà |

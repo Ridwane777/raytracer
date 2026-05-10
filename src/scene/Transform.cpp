@@ -19,3 +19,15 @@ Color Transform::getColor(const Point3D& point) const {
     Point3D localPoint = _worldToLocal.transformPoint(point);
     return _wrapped->getColor(localPoint);
 }
+
+double Transform::getOpacity() const {
+    return _wrapped->getOpacity();
+}
+
+double Transform::getRefractiveIndex() const {
+    return _wrapped->getRefractiveIndex();
+}
+
+double Transform::getReflectivity() const {
+    return _wrapped->getReflectivity();
+}
