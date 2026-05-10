@@ -1,6 +1,9 @@
 #include "Cylinder.hpp"
 
-Cylinder::Cylinder(const Point3D& center, double radius, double height, const Color& color) : _center(center), _radius(radius), _height(height), _color(color)
+Cylinder::Cylinder(const Point3D& center, double radius, double height, const Color& color,
+                   double transparency, double refractiveIndex, double reflectivity)
+    : _center(center), _radius(radius), _height(height), _color(color),
+      _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity)
 {
 }
 /*
@@ -55,14 +58,32 @@ Color Cylinder::getColor(const Point3D& point) const
     return _color;
 }
 
+double Cylinder::getOpacity() const
+{
+    return 1.0 - _transparency;
+}
+
+double Cylinder::getRefractiveIndex() const
+{
+    return _refractiveIndex;
+}
+
+double Cylinder::getReflectivity() const
+{
+    return _reflectivity;
+}
+
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
     Point3D center(params.at("x"), params.at("y"), params.at("z"));
     double  radius = params.at("r");
     double  height = params.at("height");
+    double  transparency = params.count("transparency") ? params.at("transparency") : 0.0;
+    double  refractiveIndex = params.count("refractiveIndex") ? params.at("refractiveIndex") : 1.0;
+    double  reflectivity = params.count("reflectivity") ? params.at("reflectivity") : 0.0;
     Color   color(params.at("color_r"), params.at("color_g"), params.at("color_b"));
 
-    return new Cylinder(center, radius, height, color);
+    return new Cylinder(center, radius, height, color, transparency, refractiveIndex, reflectivity);
 }
 
 extern "C" void destroyPrimitive(IPrimitive* p) { delete p; }

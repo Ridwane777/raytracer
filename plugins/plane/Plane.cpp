@@ -1,6 +1,9 @@
 #include "Plane.hpp"
 
-Plane::Plane(char axis, double position, const Color& color) : _axis(axis), _position(position), _color(color)
+Plane::Plane(char axis, double position, const Color& color,
+             double transparency, double refractiveIndex, double reflectivity)
+    : _axis(axis), _position(position), _color(color),
+      _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity)
 {
 }
 
@@ -49,6 +52,21 @@ Color Plane::getColor(const Point3D& point) const
     return _color;
 }
 
+double Plane::getOpacity() const
+{
+    return 1.0 - _transparency;
+}
+
+double Plane::getRefractiveIndex() const
+{
+    return _refractiveIndex;
+}
+
+double Plane::getReflectivity() const
+{
+    return _reflectivity;
+}
+
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
     double axisVal = params.at("axis");
@@ -57,9 +75,12 @@ extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& para
     else if (axisVal == 2.0) axis = 'Z';
 
     double position = params.at("position");
+    double transparency = params.count("transparency") ? params.at("transparency") : 0.0;
+    double refractiveIndex = params.count("refractiveIndex") ? params.at("refractiveIndex") : 1.0;
+    double reflectivity = params.count("reflectivity") ? params.at("reflectivity") : 0.0;
     Color  color(params.at("color_r"), params.at("color_g"), params.at("color_b"));
 
-    return new Plane(axis, position, color);
+    return new Plane(axis, position, color, transparency, refractiveIndex, reflectivity);
 }
 
 extern "C" void destroyPrimitive(IPrimitive* p)

@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 6.5 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 7.0 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -18,6 +18,7 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Antialiasing supersampling** | `+ 0.5` | Lancer de plusieurs rayons par pixel avec décalage aléatoire pour lisser les bords des objets. |
 | **Scale** | `+ 0.5` | Ajout d'une matrice d'échelle `Matrix4x4::scale()` applicable dynamiquement à toute primitive depuis la configuration. |
 | **Shear** | `+ 0.5` | Implémentation de `Matrix4x4::shear(xy, xz, ...)` et application en cascade dans le `Transform` decorator. |
+| **Colored light** | `+ 0.5` | Ajout de `Colors color` aux lumières Point/Directional avec multiplication sur la couleur ambiante/diffuse calculée. |
 
 ---
 
@@ -32,8 +33,6 @@ Voici une sélection des bonus les plus rapides à intégrer avec l'architecture
 *(Plus de tâches rapides dans cette catégorie)*
 
 ### 3. Mathématiques & Lumières
-*(Scale et Shear ont été ajoutés !)*
-* **Colored light (+0.5 pt)** : Facile. Ajouter un vecteur `Color` aux lumières et multiplier avec la couleur de la primitive.
 * **Transparency (+0.5 pt)** : Facile. Rendu de verre plat sans réfraction, via calcul du rayon passant au travers de l'objet.
 
 ### 4. Primitives & Modèles 3D (Objectif en cours)

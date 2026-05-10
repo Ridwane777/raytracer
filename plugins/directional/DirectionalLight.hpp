@@ -6,7 +6,7 @@
 
 class DirectionalLight : public ILight {
 public:
-    DirectionalLight(const Vector3D& dir, double intensity = 0.6);
+    DirectionalLight(const Vector3D& dir, double intensity = 0.6, const Color& color = Color(1, 1, 1));
     ~DirectionalLight() override = default;
 
     Color computeContribution(const HitInfo& hit,
@@ -15,6 +15,7 @@ public:
 private:
     Vector3D _toLight;
     double   _intensity;
+    Color    _color;
 };
 
 extern "C" ILight* createLight(const std::map<std::string, double>& params);

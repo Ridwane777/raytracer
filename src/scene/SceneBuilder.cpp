@@ -147,7 +147,10 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
             {"x",         pt.x},
             {"y",         pt.y},
             {"z",         pt.z},
-            {"intensity", cfg.diffuse}
+            {"intensity", cfg.diffuse},
+            {"color_r", static_cast<double>(pt.color.r) / 255.0},
+            {"color_g", static_cast<double>(pt.color.g) / 255.0},
+            {"color_b", static_cast<double>(pt.color.b) / 255.0}
         };
         try {
             scene.addLight(_lightFactory.create(pluginPath("point"), params));
@@ -160,7 +163,10 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
             {"dir_x",     dir.x},
             {"dir_y",     dir.y},
             {"dir_z",     dir.z},
-            {"intensity", cfg.diffuse}
+            {"intensity", cfg.diffuse},
+            {"color_r", static_cast<double>(dir.color.r) / 255.0},
+            {"color_g", static_cast<double>(dir.color.g) / 255.0},
+            {"color_b", static_cast<double>(dir.color.b) / 255.0}
         };
         try {
             scene.addLight(_lightFactory.create(pluginPath("directional"), params));
@@ -170,7 +176,10 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
 
 std::string SceneBuilder::pluginPath(const std::string& name) const
 {
-    return _pluginDir + "/raytracer_" + name + ".so";
+    std::string path = _pluginDir + "/raytracer_" + name + ".so";
+    if (path[0] != '/' && path[0] != '.')
+        path = "./" + path;
+    return path;
 }
 
 Matrix4x4 SceneBuilder::buildTransformMatrix(const TransformData& t, double x, double y, double z) const

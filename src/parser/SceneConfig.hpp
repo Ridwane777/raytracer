@@ -79,11 +79,13 @@ struct PrimitivesConfig
 struct PointLight
 {
     double x = 0, y = 0, z = 0;
+    Colors color;
 };
 
 struct DirectionalLight
 {
     double x = 0, y = 0, z = 0;
+    Colors color;
 };
 
 struct LightsConfig
