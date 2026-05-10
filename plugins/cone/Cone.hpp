@@ -11,11 +11,15 @@
 class Cone : public IPrimitive {
 public:
     Cone(const Point3D& center, double radius,
-         double height, double angle, const Color& color);
+         double height, double angle, const Color& color,
+         double transparency, double refractiveIndex, double reflectivity);
 
     std::optional<double> hits(const Ray& ray) const override;
     Vector3D getNormal(const Point3D& point) const override;
     Color getColor(const Point3D& point) const override;
+    double getOpacity() const override;
+    double getRefractiveIndex() const override;
+    double getReflectivity() const override;
 
 private:
     Point3D _center;
@@ -23,6 +27,9 @@ private:
     double  _height;
     double  _angle;
     Color   _color;
+    double  _transparency;
+    double  _refractiveIndex;
+    double  _reflectivity;
 };
 
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params);
