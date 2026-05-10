@@ -102,6 +102,12 @@ Vector3D Transform::getNormal(const Point3D& point) const {
     Vector3D localNormal = _wrapped->getNormal(localPoint);
     return _worldToLocal.transpose().transformVector(localNormal).normalize();
 }
+
+// Nouveauté pour les matériaux (Transparence / Réfraction / Réflexion) :
+// Le Transform propage ces requêtes à l'objet interne sans les altérer.
+double Transform::getOpacity() const { return _wrapped->getOpacity(); }
+double Transform::getRefractiveIndex() const { return _wrapped->getRefractiveIndex(); }
+double Transform::getReflectivity() const { return _wrapped->getReflectivity(); }
 ```
 
 ---
@@ -142,11 +148,9 @@ params["y"] = 0.0;
 params["z"] = 0.0;
 auto base = factory.create("sphere", params);
 
-// Le Transform stocke la matrice de translation ET son inverse
-auto translated = std::make_shared<Transform>(
-    base,
-    Matrix4x4::translation(Vector3D(60.0, 5.0, 40.0))
-);
+// On utilise buildTransformMatrix pour combiner translation, rotation, scale, et shear
+Matrix4x4 tr = buildTransformMatrix(cfg, 60.0, 5.0, 40.0);
+auto translated = std::make_shared<Transform>(base, tr);
 scene.addPrimitive(translated);  // on ajoute le Transform, pas la Sphère directement
 ```
 
@@ -155,10 +159,8 @@ scene.addPrimitive(translated);  // on ajoute le Transform, pas la Sphère direc
 ```cpp
 // Plan Y à position = -3 → translate de (0, -3, 0)
 double ty = (axisVal == 1.0) ? cfg.position : 0.0;
-auto translated = std::make_shared<Transform>(
-    basePlane,
-    Matrix4x4::translation(Vector3D(0.0, ty, 0.0))
-);
+Matrix4x4 tr = buildTransformMatrix(cfg, 0.0, ty, 0.0);
+auto translated = std::make_shared<Transform>(basePlane, tr);
 ```
 
 ---

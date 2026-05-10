@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 7.0 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 9.0 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -19,8 +19,13 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Scale** | `+ 0.5` | Ajout d'une matrice d'échelle `Matrix4x4::scale()` applicable dynamiquement à toute primitive depuis la configuration. |
 | **Shear** | `+ 0.5` | Implémentation de `Matrix4x4::shear(xy, xz, ...)` et application en cascade dans le `Transform` decorator. |
 | **Colored light** | `+ 0.5` | Ajout de `Colors color` aux lumières Point/Directional avec multiplication sur la couleur ambiante/diffuse calculée. |
+| **Transparency** | `+ 0.5` | Rendu récursif dans le `Renderer`, combinant la couleur directe (via `opacity`) avec le rayon traversant l'objet. |
+| **Refraction** | `+ 1.0` | Déformation physique de la lumière implémentée via la Loi de Snell-Descartes dans `Renderer::computeRefraction()`. |
+| **Reflection** | `+ 0.5` | Effet miroir géré récursivement dans `Renderer`, mixant couleur de base et couleur réfléchie (formule $R = I - 2(I \cdot N)N$). |
 
 ---
+
+
 
 ## 🎯 Bonus rapides à ajouter (Discussion)
 
@@ -33,12 +38,11 @@ Voici une sélection des bonus les plus rapides à intégrer avec l'architecture
 *(Plus de tâches rapides dans cette catégorie)*
 
 ### 3. Mathématiques & Lumières
-* **Transparency (+0.5 pt)** : Facile. Rendu de verre plat sans réfraction, via calcul du rayon passant au travers de l'objet.
+*(Scale, Shear, Colored Lights, Transparence validés !)*
 
 ### 4. Primitives & Modèles 3D (Objectif en cours)
 * **Triangles (+1.0 pt)** : Implémentation de l'algorithme de Möller–Trumbore. Indispensable pour la suite.
 * **.OBJ file (+1.0 pt)** : Création d'un parser pour lire un fichier de modèle 3D `.obj` et le convertir en une liste de triangles dans la scène. Attention aux performances sur les gros modèles.
 
-### 5. Matériaux Avancés (Refactoring nécessaire)
-* **Reflection (+0.5 pt)** : Effet miroir parfait. Demande d'ajouter un attribut `reflectivity` à l'interface `IPrimitive`, de recompiler tous les plugins, et d'ajouter le calcul du rayon réfléchi dans le `Renderer`.
-* **Refraction (+1.0 pt)** : Déformation de la lumière à travers un objet (Loi de Snell-Descartes). Demande d'ajouter un attribut `ior` (Index of Refraction) à `IPrimitive` et de relancer des rayons déviés.
+### 5. Matériaux Avancés
+*(Toutes les tâches de réflexion et réfraction ont été validées !)*
