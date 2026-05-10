@@ -57,3 +57,15 @@ Color PrimitiveList::getColor(const Point3D& point) const
     (void)point;
     return Color(0, 0, 0);
 }
+
+double PrimitiveList::getOpacity() const {
+    return 1.0;
+}
+
+double PrimitiveList::getRefractiveIndex() const {
+    return 1.0;
+}
+
+double PrimitiveList::getReflectivity() const {
+    return 0.0;
+}

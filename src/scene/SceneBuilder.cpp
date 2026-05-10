@@ -44,13 +44,16 @@ void SceneBuilder::buildPrimitives(Scene& scene, const PrimitivesConfig& cfg)
 void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
 {
     std::map<std::string, double> params = {
-        {"x",       0.0},
-        {"y",       0.0},
-        {"z",       0.0},
-        {"r",       cfg.r},
-        {"color_r", static_cast<double>(cfg.color.r) / 255.0},
-        {"color_g", static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b", static_cast<double>(cfg.color.b) / 255.0}
+        {"x",             0.0},
+        {"y",             0.0},
+        {"z",             0.0},
+        {"r",             cfg.r},
+        {"transparency",  cfg.transparency},
+        {"refractiveIndex", cfg.refractiveIndex},
+        {"reflectivity",  cfg.reflectivity},
+        {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+        {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("sphere"), params);
@@ -69,11 +72,14 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
     else if (cfg.axis == "Z" || cfg.axis == "z") axisVal = 2.0;
 
     std::map<std::string, double> params = {
-        {"axis",     axisVal},
-        {"position", 0.0},
-        {"color_r",  static_cast<double>(cfg.color.r) / 255.0},
-        {"color_g",  static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b",  static_cast<double>(cfg.color.b) / 255.0}
+        {"axis",          axisVal},
+        {"position",      0.0},
+        {"transparency",  cfg.transparency},
+        {"refractiveIndex", cfg.refractiveIndex},
+        {"reflectivity",  cfg.reflectivity},
+        {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+        {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
     };
     double tx = (axisVal == 0.0) ? cfg.position : 0.0;
     double ty = (axisVal == 1.0) ? cfg.position : 0.0;
@@ -91,14 +97,17 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
 void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
 {
     std::map<std::string, double> params = {
-        {"x",       0.0},
-        {"y",       0.0},
-        {"z",       0.0},
-        {"r",       cfg.r},
-        {"height",  cfg.height},
-        {"color_r", static_cast<double>(cfg.color.r) / 255.0},
-        {"color_g", static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b", static_cast<double>(cfg.color.b) / 255.0}
+        {"x",             0.0},
+        {"y",             0.0},
+        {"z",             0.0},
+        {"r",             cfg.r},
+        {"height",        cfg.height},
+        {"transparency",  cfg.transparency},
+        {"refractiveIndex", cfg.refractiveIndex},
+        {"reflectivity",  cfg.reflectivity},
+        {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+        {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cylinder"), params);
@@ -113,15 +122,18 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
 void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
 {
     std::map<std::string, double> params = {
-        {"x",       0.0},
-        {"y",       0.0},
-        {"z",       0.0},
-        {"r",       cfg.r},
-        {"height",  cfg.height},
-        {"angle",   cfg.angle},
-        {"color_r", static_cast<double>(cfg.color.r) / 255.0},
-        {"color_g", static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b", static_cast<double>(cfg.color.b) / 255.0}
+        {"x",             0.0},
+        {"y",             0.0},
+        {"z",             0.0},
+        {"r",             cfg.r},
+        {"height",        cfg.height},
+        {"angle",         cfg.angle},
+        {"transparency",  cfg.transparency},
+        {"refractiveIndex", cfg.refractiveIndex},
+        {"reflectivity",  cfg.reflectivity},
+        {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+        {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cone"), params);

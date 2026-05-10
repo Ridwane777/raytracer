@@ -19,6 +19,9 @@ public:
     Vector3D getNormal(const Point3D& point) const override;
 
     Color getColor(const Point3D& point) const override;
+    double getOpacity() const override;
+    double getRefractiveIndex() const override;
+    double getReflectivity() const override;
 };
 
 #endif /* !TRANSFORM_HPP_ */
