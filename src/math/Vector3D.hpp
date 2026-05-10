@@ -32,4 +32,4 @@ class Vector3D {
         Vector3D operator/(double scale) const;
 };
 
-#endif /* !VECTOR3D_HPP_ */
+#endif 

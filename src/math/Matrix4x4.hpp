@@ -7,7 +7,7 @@ class Matrix4x4 {
 public:
     double m[4][4];
 
-    Matrix4x4();                          // matrice identité
+    Matrix4x4();                          
     static Matrix4x4 identity();
     static Matrix4x4 translation(const Vector3D& t);
     static Matrix4x4 rotationX(double deg);
@@ -22,8 +22,8 @@ public:
 
     Point3D  transformPoint(const Point3D& p) const;
     Vector3D transformVector(const Vector3D& v) const;
-    // Transforme un rayon dans le repère local de l'objet.
+    
     Ray      transformRay(const Ray& ray) const;
 };
 
-#endif /* !MATRIX4X4_HPP_ */
+#endif 

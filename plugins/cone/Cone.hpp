@@ -35,4 +35,4 @@ private:
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params);
 extern "C" void        destroyPrimitive(IPrimitive* p);
 
-#endif /* !CONE_HPP_ */
+#endif 

@@ -6,7 +6,7 @@
 
 class Transform : public IPrimitive {
 private:
-    // shared_ptr : le Transform est copropriétaire de la primitive wrappée.
+    
     std::shared_ptr<IPrimitive> _wrapped;
     Matrix4x4   _worldToLocal;
     Matrix4x4   _localToWorld;
@@ -24,4 +24,4 @@ public:
     double getReflectivity() const override;
 };
 
-#endif /* !TRANSFORM_HPP_ */
+#endif 

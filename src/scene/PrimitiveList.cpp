@@ -1,9 +1,5 @@
 #include "PrimitiveList.hpp"
 
-/*PrimitiveList::PrimitiveList()
-{
-}
-*/
 PrimitiveList::~PrimitiveList()
 {
 }

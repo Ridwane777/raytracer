@@ -23,4 +23,4 @@ class DLLoaderError : public Error {
         explicit DLLoaderError(std::string error) : Error(std::move(error)) {}
 };
 
-#endif /* !ERROR_HPP_ */
+#endif 

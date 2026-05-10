@@ -6,7 +6,6 @@ Color::Color() : r(0), g(0), b(0)
 
 Color::Color(double r, double g, double b) : r(r), g(g), b(b) {}
 
-// Si factor > 1 ça éclaircie et si c'est l'inverse ça assombri
 Color Color::operator*(double factor) const {
     return Color(r * factor, g * factor, b * factor);
 }

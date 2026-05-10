@@ -7,10 +7,6 @@ Plane::Plane(char axis, double position, const Color& color,
 {
 }
 
-/*Plane::~Plane()
-{
-}*/
-
 std::optional<double> Plane::hits(const Ray& ray) const
 {
     double origin_axis;
@@ -28,7 +24,7 @@ std::optional<double> Plane::hits(const Ray& ray) const
     }
 
     if (std::abs(dir_axis) < 1e-8)
-        return std::nullopt; // rayon parallèle au plan
+        return std::nullopt; 
 
     double t = (_position - origin_axis) / dir_axis;
 
@@ -70,7 +66,7 @@ double Plane::getReflectivity() const
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
     double axisVal = params.at("axis");
-    char   axis    = 'Y'; // default
+    char   axis    = 'Y'; 
     if (axisVal == 0.0)      axis = 'X';
     else if (axisVal == 2.0) axis = 'Z';
 

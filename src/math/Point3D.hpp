@@ -17,4 +17,4 @@ class Point3D {
         double distanceTo(const Point3D& other) const;
 };
 
-#endif /* !POINT3D_HPP_ */
+#endif 

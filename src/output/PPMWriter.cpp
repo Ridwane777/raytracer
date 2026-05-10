@@ -15,12 +15,10 @@ void PPMWriter::write(const std::string& filepath,
     if (!file.is_open())
         throw Error("PPMWriter: cannot open file: " + filepath);
 
-    // En-tête PPM P3
     file << "P3\n"
          << width << " " << height << "\n"
          << "255\n";
 
-    // Pixels ligne par ligne, de haut en bas
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             const Color c = pixels[y][x].clamp();

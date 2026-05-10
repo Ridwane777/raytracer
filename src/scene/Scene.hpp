@@ -10,7 +10,7 @@
 class Scene {
 public:
     Camera                                  camera;
-    PrimitiveList                           primitives;     // Composite IPrimitive
+    PrimitiveList                           primitives;     
     std::vector<std::shared_ptr<ILight>>    lights;
 
     double ambientIntensity = 0.4;
@@ -26,4 +26,4 @@ private:
     std::vector<std::shared_ptr<IPrimitive>> _ownedPrimitives;
 };
 
-#endif /* !SCENE_HPP_ */
+#endif 

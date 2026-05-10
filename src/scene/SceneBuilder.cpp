@@ -147,13 +147,12 @@ void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
 
 void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
 {
-    // Lumière ambiante
+    
     try {
         std::map<std::string, double> params = {{"intensity", cfg.ambient}};
         scene.addLight(_lightFactory.create(pluginPath("ambient"), params));
     } catch (...) {}
 
-    // Lumières ponctuelles (point)
     for (const auto& pt : cfg.point) {
         std::map<std::string, double> params = {
             {"x",         pt.x},
@@ -169,7 +168,6 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
         } catch (const std::exception& e) { (void)e; }
     }
 
-    // Lumières directionnelles
     for (const auto& dir : cfg.directional) {
         std::map<std::string, double> params = {
             {"dir_x",     dir.x},

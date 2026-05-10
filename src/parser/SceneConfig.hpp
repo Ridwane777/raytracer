@@ -58,7 +58,7 @@ struct CylinderConfig : public TransformData
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
-    double height = 1.0;   // hauteur du cylindre
+    double height = 1.0;   
     Colors color;
 };
 
@@ -66,8 +66,8 @@ struct ConeConfig : public TransformData
 {
     double x = 0, y = 0, z = 0;
     double r = 1;
-    double height = 1.0;   // hauteur du cône
-    double angle  = 30.0;  // demi-angle au sommet (en degrés)
+    double height = 1.0;   
+    double angle  = 30.0;  
     Colors color;
 };
 
@@ -106,4 +106,4 @@ struct SceneConfig
     LightsConfig lights;
 };
 
-#endif /* !SCENECONFIG_HPP_ */
+#endif 

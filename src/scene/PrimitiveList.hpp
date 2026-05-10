@@ -26,4 +26,4 @@ private:
     std::vector<IPrimitive*> _children;
 };
 
-#endif /* !PRIMITIVELIST_HPP_ */
+#endif 

@@ -12,7 +12,6 @@ std::vector<std::vector<Color>> Renderer::render() const {
   const int width = _scene.camera.width;
   const int height = _scene.camera.height;
 
-  // Buffer 2D : pixels[y][x]
   std::vector<std::vector<Color>> pixels(height, std::vector<Color>(width));
 
   unsigned int numThreads = std::thread::hardware_concurrency();
@@ -33,7 +32,6 @@ std::vector<std::vector<Color>> Renderer::render() const {
     });
   }
 
-  // Attendre que tous les threads aient terminé
   for (auto &t : threads) {
     if (t.joinable()) {
       t.join();
@@ -44,7 +42,7 @@ std::vector<std::vector<Color>> Renderer::render() const {
 }
 
 Color Renderer::computeColor(const Ray &ray, int depth) const {
-  // Arrêt de la récursion (reflets/réfraction désactivés à depth>_maxDepth)
+  
   if (depth > _maxDepth)
     return Color(0, 0, 0);
 

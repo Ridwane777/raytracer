@@ -21,4 +21,4 @@ private:
     using Loader = DLLoader<IPrimitive, const std::map<std::string, double>&>;
 };
 
-#endif // PRIMITIVEFACTORY_HPP_
+#endif 

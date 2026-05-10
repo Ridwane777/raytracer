@@ -20,4 +20,4 @@ private:
     using Loader = DLLoader<ILight, const std::map<std::string, double>&>;
 };
 
-#endif // LIGHTFACTORY_HPP_
+#endif 

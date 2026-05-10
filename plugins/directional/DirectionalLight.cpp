@@ -1,7 +1,7 @@
 #include "DirectionalLight.hpp"
 
 DirectionalLight::DirectionalLight(const Vector3D& dir, double intensity, const Color& color)
-    : _toLight(dir.normalize() * -1.0)  // on stocke la direction vers la lumière
+    : _toLight(dir.normalize() * -1.0)  
     , _intensity(intensity)
     , _color(color)
 {}
@@ -13,7 +13,7 @@ Color DirectionalLight::computeContribution(const HitInfo& hit,
     Ray shadowRay(shadowOrigin, _toLight);
 
     if (scene.hits(shadowRay).has_value())
-        return Color(0.0, 0.0, 0.0);   // dans l'ombre
+        return Color(0.0, 0.0, 0.0);   
 
     double diff = hit.normal.dot(_toLight);
     if (diff < 0.0)

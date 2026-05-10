@@ -24,4 +24,4 @@ public:
     Ray getRayForPixel(double px, double py) const;
 };
 
-#endif /* !CAMERA_HPP_ */
+#endif 

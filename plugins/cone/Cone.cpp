@@ -7,10 +7,6 @@ Cone::Cone(const Point3D& center, double radius, double height, double angle, co
 {
 }
 
-/*Cone::~Cone()
-{
-}*/
-
 std::optional<double> Cone::hits(const Ray& ray) const
 {
     double k  = std::tan(_angle * M_PI / 180.0);
@@ -57,8 +53,7 @@ Vector3D Cone::getNormal(const Point3D& point) const
     double k  = std::tan(_angle * M_PI / 180.0);
     double dx = point.X - _center.X;
     double dz = point.Z - _center.Z;
-    //double dy = point.Y - _center.Y;
-
+    
     return Vector3D(dx, -k * std::sqrt(dx*dx + dz*dz), dz).normalize();
 }
 
@@ -82,7 +77,6 @@ double Cone::getReflectivity() const
 {
     return _reflectivity;
 }
-
 
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {

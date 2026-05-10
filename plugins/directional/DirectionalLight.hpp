@@ -20,4 +20,4 @@ private:
 
 extern "C" ILight* createLight(const std::map<std::string, double>& params);
 
-#endif // DIRECTIONALLIGHT_HPP_
+#endif 

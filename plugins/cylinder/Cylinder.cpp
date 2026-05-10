@@ -6,10 +6,6 @@ Cylinder::Cylinder(const Point3D& center, double radius, double height, const Co
       _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity)
 {
 }
-/*
-Cylinder::~Cylinder()
-{
-}*/
 
 std::optional<double> Cylinder::hits(const Ray& ray) const
 {

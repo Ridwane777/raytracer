@@ -17,4 +17,4 @@ public:
     virtual double getReflectivity() const = 0;
 };
 
-#endif /* !IPRIMITIVE_HPP_ */
+#endif 

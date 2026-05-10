@@ -3,6 +3,6 @@
 Ray::Ray(const Point3D& origin, const Vector3D& direction) : origin(origin), direction(direction) {}
 
 Point3D Ray::at(double t) const {
-    //P(t) = Origine + t * Direction
+    
     return origin + (direction * t);
 }

@@ -7,10 +7,6 @@ Sphere::Sphere(const Point3D& center, double radius, const Color& color,
 {
 }
 
-/*Sphere::~Sphere()
-{
-}*/
-
 std::optional<double> Sphere::hits(const Ray& ray) const
 {
     Vector3D oc = ray.origin - _center;

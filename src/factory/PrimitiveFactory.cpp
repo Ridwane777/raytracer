@@ -10,6 +10,6 @@ PrimitiveFactory::PrimitivePtr PrimitiveFactory::create(
 
     IPrimitive* raw = loader->getInstance();
     return std::shared_ptr<IPrimitive>(raw, [loader](IPrimitive*) mutable {
-        loader.reset(); // libère le DLLoader → dlclose
+        loader.reset(); 
     });
 }

@@ -19,4 +19,4 @@ public:
     Color computeContribution(const HitInfo& hit, const IPrimitive& scene) const override;
 };
 
-#endif /* !POINTLIGHT_HPP_ */
+#endif 

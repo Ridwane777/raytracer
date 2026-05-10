@@ -1,4 +1,3 @@
-
 #include "SceneParser.hpp"
 #include "../Error.hpp"
 
@@ -159,7 +158,7 @@ CylinderConfig SceneParser::parseCylinder(const libconfig::Setting& s)
     cyl.y      = getDouble(s, "y");
     cyl.z      = getDouble(s, "z");
     cyl.r      = getDouble(s, "r", 1.0);
-    cyl.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
+    cyl.height = getDouble(s, "height", 1.0);  
     cyl.color  = parseColor(s);
     parseTransformData(s, cyl);
     return cyl;
@@ -172,8 +171,8 @@ ConeConfig SceneParser::parseCone(const libconfig::Setting& s)
     cone.y      = getDouble(s, "y");
     cone.z      = getDouble(s, "z");
     cone.r      = getDouble(s, "r", 1.0);
-    cone.height = getDouble(s, "height", 1.0);  // hauteur, defaut = 1
-    cone.angle  = getDouble(s, "angle", 30.0);  // demi-angle, defaut = 30 degres
+    cone.height = getDouble(s, "height", 1.0);  
+    cone.angle  = getDouble(s, "angle", 30.0);  
     cone.color  = parseColor(s);
     parseTransformData(s, cone);
     return cone;

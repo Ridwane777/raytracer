@@ -13,7 +13,7 @@ Ce projet respecte les principes SOLID et utilise plusieurs Design Patterns inco
 
 ---
 
-## Fonctionnalités (Barème Ridwane777)
+## Fonctionnalités
 
 L'implémentation actuelle couvre toutes les exigences principales ainsi que de nombreux bonus mathématiques et architecturaux.
 
@@ -28,13 +28,19 @@ L'implémentation actuelle couvre toutes les exigences principales ainsi que de 
 
 ### ✅ SHOULD (Fonctionnalités intermédiaires)
 - **Primitives** : Cylinder, Cone (via plugins)
+- **Transformations : Rotations** : L'algèbre complète de rotation (`rotationX`, `Y`, `Z`) est mathématiquement implémentée et prête à l'emploi via le fichier de configuration.
 - **Light** : Drop shadows (Ombres portées réalistes via "Shadow Rays").
 
 ### 🏆 COULD (Bonus & Fonctionnalités Avancées)
-- **Transformations : Transformation Matrix** : Le système utilise de véritables matrices 4x4 combinées et inversées pour gérer la position des objets (Pattern Decorator).
-- **Transformations : Rotations** : L'algèbre complète de rotation (`rotationX`, `Y`, `Z`) est mathématiquement implémentée et prête à l'emploi dans le moteur matriciel.
-- **Light : Multiple directional lights** : L'architecture supporte une liste illimitée de sources lumineuses additionnant leurs contributions.
-- **Light : Point light** : Plugin de lumière ponctuelle implémenté (`plugins/point/PointLight`), agissant comme une ampoule avec sa propre position 3D et gérant parfaitement les ombres multiples.
+- **Transformations : Transformation Matrix** : Le système utilise de véritables matrices 4x4 combinées et inversées pour gérer de façon transparente toutes les opérations de positionnement (Pattern Decorator).
+- **Transformations : Scale & Shear** : Déformation d'échelle et cisaillement (shear) implémentés directement dans le moteur matriciel, applicables à n'importe quelle primitive sans retoucher son code.
+- **Light : Multiple lights** : L'architecture supporte une liste illimitée de sources lumineuses (ambiance, directionnelles, ponctuelles) additionnant leurs contributions.
+- **Light : Point light** : Plugin de lumière ponctuelle (`plugins/point/PointLight`), agissant comme une ampoule locale gérant la décroissance lumineuse et les ombres multiples.
+- **Light : Colored light** : Support spectral complet (RGB). La couleur finale est le produit du spectre de l'objet et de celui de la lumière qui l'éclaire.
+- **Material : Transparency** : L'opacité des objets permet le passage du rayon au travers des primitives (mélange Alpha Blending).
+- **Material : Refraction** : Implémentation physique complète de la Loi de Snell-Descartes avec indices de réfraction et gestion de la réflexion totale interne (ex: verre, eau).
+- **Material : Reflection** : Effet miroir parfait avec limitation de rebonds via `_maxDepth` dans le moteur récursif.
+- **Render : Antialiasing (Supersampling)** : Lissage des bords par lancer de plusieurs rayons par pixel avec décalages sub-pixels aléatoires.
 
 ---
 

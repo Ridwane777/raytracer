@@ -19,4 +19,4 @@ private:
 
 extern "C" ILight* createLight(const std::map<std::string, double>& params);
 
-#endif // AMBIENTLIGHT_HPP_
+#endif 

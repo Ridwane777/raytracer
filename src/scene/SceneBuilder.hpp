@@ -14,7 +14,6 @@ public:
     explicit SceneBuilder(const std::string& pluginDir = ".");
     ~SceneBuilder() = default;
 
-    // Point d'entrée unique : lit un SceneConfig et retourne une Scene prête à rendre.
     Scene build(const SceneConfig& cfg);
 
 private:
@@ -37,4 +36,4 @@ private:
     std::string pluginPath(const std::string& name) const;
 };
 
-#endif /* !SCENEBUILDER_HPP_ */
+#endif 

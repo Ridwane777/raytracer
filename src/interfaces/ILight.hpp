@@ -11,4 +11,4 @@ public:
                                       const IPrimitive& scene) const = 0;
 };
 
-#endif /* !ILIGHT_HPP_ */
+#endif 

@@ -29,4 +29,4 @@ private:
                     int& completedRows) const;
 };
 
-#endif /* !RENDERER_HPP_ */
+#endif 

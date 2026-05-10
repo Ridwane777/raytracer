@@ -112,7 +112,6 @@ Matrix4x4 Matrix4x4::inverse() const {
                 pivotRow = k;
         }
 
-        // Échange des lignes si nécessaire
         if (pivotRow != i) {
             for (int j = 0; j < 4; j++) {
                 std::swap(temp[i][j], temp[pivotRow][j]);

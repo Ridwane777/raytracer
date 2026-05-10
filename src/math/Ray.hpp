@@ -14,4 +14,4 @@ class Ray {
         Point3D at(double t) const;
 };
 
-#endif /* !RAY_HPP_ */
+#endif 

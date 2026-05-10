@@ -14,8 +14,7 @@ public:
                 const Vector3D& bottom_side,
                 const Vector3D& left_side);
 
-    // P = origin + u * bottom_side + v * left_side   (u, v dans [0, 1])
     Point3D pointAt(double u, double v) const;
 };
 
-#endif /* !RECTANGLE3D_HPP_ */
+#endif 
