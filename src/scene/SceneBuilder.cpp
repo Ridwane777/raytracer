@@ -2,8 +2,8 @@
 #include "Transform.hpp"
 #include "../math/Point3D.hpp"
 #include "../math/Vector3D.hpp"
-#include <iostream>
 #include <memory>
+#include "../Error.hpp"
 
 SceneBuilder::SceneBuilder(const std::string& pluginDir)
     : _pluginDir(pluginDir)
@@ -65,7 +65,7 @@ void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
         auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
-        std::cerr << "[Sphere] " << e.what() << "\n";
+        throw Error("[Sphere] " + std::string(e.what()));
     }
 }
 
@@ -98,7 +98,7 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
         auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
-        std::cerr << "[Plane] " << e.what() << "\n";
+        throw Error("[Plane] " + std::string(e.what()));
     }
 }
 
@@ -127,7 +127,7 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
         auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
-        std::cerr << "[Cylinder] " << e.what() << "\n";
+        throw Error("[Cylinder] " + std::string(e.what()));
     }
 }
 
@@ -157,7 +157,7 @@ void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
         auto translated = std::make_shared<Transform>(base, tr);
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
-        std::cerr << "[Cone] " << e.what() << "\n";
+        throw Error("[Cone] " + std::string(e.what()));
     }
 }
 
@@ -167,7 +167,9 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
     try {
         std::map<std::string, double> params = {{"intensity", cfg.ambient}};
         scene.addLight(_lightFactory.create(pluginPath("ambient"), params));
-    } catch (...) {}
+    } catch (const std::exception& e) {
+        throw Error("[Ambient Light] " + std::string(e.what()));
+    }
 
     for (const auto& pt : cfg.point) {
         std::map<std::string, double> params = {
@@ -181,7 +183,10 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
         };
         try {
             scene.addLight(_lightFactory.create(pluginPath("point"), params));
-        } catch (const std::exception& e) { (void)e; }
+        } catch (const std::exception& e) {
+            throw Error("[Point Light] " + std::string(e.what()));
+        }
+
     }
 
     for (const auto& dir : cfg.directional) {
@@ -196,7 +201,10 @@ void SceneBuilder::buildLights(Scene& scene, const LightsConfig& cfg)
         };
         try {
             scene.addLight(_lightFactory.create(pluginPath("directional"), params));
-        } catch (const std::exception& e) { (void)e; }
+        } catch (const std::exception& e) {
+            throw Error("[Directional Light] " + std::string(e.what()));
+        }
+
     }
 }
 
