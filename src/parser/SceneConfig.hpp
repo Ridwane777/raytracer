@@ -38,6 +38,8 @@ struct TransformData
     double transparency = 0.0;
     double refractiveIndex = 1.0;
     double reflectivity = 0.0;
+    double shininess = 0.0;
+    Colors specular = {255, 255, 255};
 };
 
 struct SphereConfig : public TransformData

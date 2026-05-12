@@ -12,7 +12,8 @@ class Cylinder : public IPrimitive {
 public:
     Cylinder(const Point3D& center, double radius,
              double height, const Color& color,
-             double transparency, double refractiveIndex, double reflectivity);
+             double transparency, double refractiveIndex, double reflectivity,
+             double shininess, const Color& specularColor);
 
     std::optional<double> hits(const Ray& ray) const override;
     Vector3D getNormal(const Point3D& point) const override;
@@ -20,6 +21,8 @@ public:
     double getOpacity() const override;
     double getRefractiveIndex() const override;
     double getReflectivity() const override;
+    double getShininess() const override;
+    Color getSpecularColor() const override;
 
 private:
     Point3D _center;
@@ -29,6 +32,8 @@ private:
     double  _transparency;
     double  _refractiveIndex;
     double  _reflectivity;
+    double  _shininess;
+    Color   _specularColor;
 };
 
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params);

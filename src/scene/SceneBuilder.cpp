@@ -51,9 +51,13 @@ void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
         {"transparency",  cfg.transparency},
         {"refractiveIndex", cfg.refractiveIndex},
         {"reflectivity",  cfg.reflectivity},
+        {"shininess",     cfg.shininess},
         {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
         {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+        {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+        {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+        {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("sphere"), params);
@@ -77,9 +81,13 @@ void SceneBuilder::addPlane(Scene& scene, const PlaneConfig& cfg)
         {"transparency",  cfg.transparency},
         {"refractiveIndex", cfg.refractiveIndex},
         {"reflectivity",  cfg.reflectivity},
+        {"shininess",     cfg.shininess},
         {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
         {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+        {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+        {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+        {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
     };
     double tx = (axisVal == 0.0) ? cfg.position : 0.0;
     double ty = (axisVal == 1.0) ? cfg.position : 0.0;
@@ -105,9 +113,13 @@ void SceneBuilder::addCylinder(Scene& scene, const CylinderConfig& cfg)
         {"transparency",  cfg.transparency},
         {"refractiveIndex", cfg.refractiveIndex},
         {"reflectivity",  cfg.reflectivity},
+        {"shininess",     cfg.shininess},
         {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
         {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+        {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+        {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+        {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cylinder"), params);
@@ -131,9 +143,13 @@ void SceneBuilder::addCone(Scene& scene, const ConeConfig& cfg)
         {"transparency",  cfg.transparency},
         {"refractiveIndex", cfg.refractiveIndex},
         {"reflectivity",  cfg.reflectivity},
+        {"shininess",     cfg.shininess},
         {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
         {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
-        {"color_b",       static_cast<double>(cfg.color.b) / 255.0}
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+        {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+        {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+        {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
     };
     try {
         auto base = _primitiveFactory.create(pluginPath("cone"), params);

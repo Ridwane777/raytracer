@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 #include <mutex>
-#include <thread>
 #include <random>
+#include <thread>
 
 Renderer::Renderer(const Scene &scene, int maxDepth)
     : _scene(scene), _maxDepth(maxDepth) {}
@@ -26,10 +26,11 @@ std::vector<std::vector<Color>> Renderer::render() const {
   for (unsigned int i = 0; i < numThreads; ++i) {
     int startY = i * rowsPerThread;
     int endY = (i == numThreads - 1) ? height : startY + rowsPerThread;
-    
-    threads.emplace_back([this, startY, endY, &pixels, &progressMutex, &completedRows]() {
-        this->renderRows(startY, endY, pixels, progressMutex, completedRows);
-    });
+
+    threads.emplace_back(
+        [this, startY, endY, &pixels, &progressMutex, &completedRows]() {
+          this->renderRows(startY, endY, pixels, progressMutex, completedRows);
+        });
   }
 
   for (auto &t : threads) {
@@ -42,7 +43,7 @@ std::vector<std::vector<Color>> Renderer::render() const {
 }
 
 Color Renderer::computeColor(const Ray &ray, int depth) const {
-  
+
   if (depth > _maxDepth)
     return Color(0, 0, 0);
 
@@ -57,7 +58,8 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
   Point3D hitPoint = ray.at(t.value());
   Vector3D normal = closest->getNormal(hitPoint).normalize();
   Vector3D viewDir = (ray.direction * -1.0).normalize();
-  HitInfo info{hitPoint, normal, viewDir};
+  HitInfo info{hitPoint, normal, viewDir, closest->getShininess(),
+               closest->getSpecularColor()};
   Color lighting = computeDirectLighting(*closest, info);
   Color objColor = closest->getColor(hitPoint);
   double opacity = closest->getOpacity();
@@ -69,13 +71,15 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
     baseColor = (objColor * lighting);
   } else {
     Color directColor = (objColor * lighting) * opacity;
-    Color refractedColor = computeRefraction(*closest, info, depth + 1) * (1.0 - opacity);
+    Color refractedColor =
+        computeRefraction(*closest, info, depth + 1) * (1.0 - opacity);
     baseColor = directColor + refractedColor;
   }
 
   if (reflectivity > 0.0 && depth < _maxDepth) {
     Color reflectedColor = computeReflection(info, depth + 1);
-    return (baseColor * (1.0 - reflectivity) + reflectedColor * reflectivity).clamp();
+    return (baseColor * (1.0 - reflectivity) + reflectedColor * reflectivity)
+        .clamp();
   }
 
   return baseColor.clamp();
@@ -95,11 +99,13 @@ Color Renderer::computeDirectLighting(const IPrimitive &primitive,
 Color Renderer::computeReflection(const HitInfo &info, int depth) const {
   Vector3D incident = (info.viewDir * -1.0).normalize();
   Vector3D reflectDir = incident - info.normal * 2.0 * incident.dot(info.normal);
+
   Ray reflectionRay(info.point + info.normal * 1e-4, reflectDir.normalize());
   return computeColor(reflectionRay, depth);
 }
 
-Color Renderer::computeRefraction(const IPrimitive &primitive, const HitInfo &info, int depth) const {
+Color Renderer::computeRefraction(const IPrimitive &primitive,
+                                  const HitInfo &info, int depth) const {
   double n1 = 1.0;
   double n2 = primitive.getRefractiveIndex();
 
@@ -118,7 +124,8 @@ Color Renderer::computeRefraction(const IPrimitive &primitive, const HitInfo &in
   if (k < 0.0)
     return computeReflection(info, depth);
 
-  Vector3D refractedDir = incident * ratio + normal * (ratio * cosI - std::sqrt(k));
+  Vector3D refractedDir =
+      incident * ratio + normal * (ratio * cosI - std::sqrt(k));
   Ray refractedRay(info.point + refractedDir * 1e-4, refractedDir.normalize());
   return computeColor(refractedRay, depth);
 }
@@ -129,10 +136,9 @@ void Renderer::printProgress(int completedRows, int totalRows) const {
             << completedRows << "/" << totalRows << ")" << std::flush;
 }
 
-void Renderer::renderRows(int startY, int endY, 
-                          std::vector<std::vector<Color>>& pixels,
-                          std::mutex& progressMutex, 
-                          int& completedRows) const {
+void Renderer::renderRows(int startY, int endY,
+                          std::vector<std::vector<Color>> &pixels,
+                          std::mutex &progressMutex, int &completedRows) const {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> dis(0.0, 1.0);
@@ -140,7 +146,8 @@ void Renderer::renderRows(int startY, int endY,
   const int width = _scene.camera.width;
   const int height = _scene.camera.height;
   int samples = _scene.camera.antialiasing;
-  if (samples < 1) samples = 1;
+  if (samples < 1)
+    samples = 1;
 
   for (int y = startY; y < endY; ++y) {
     for (int x = 0; x < width; ++x) {
