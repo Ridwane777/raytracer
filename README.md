@@ -41,6 +41,7 @@ L'implémentation actuelle couvre toutes les exigences principales ainsi que de 
 - **Material : Refraction** : Implémentation physique complète de la Loi de Snell-Descartes avec indices de réfraction et gestion de la réflexion totale interne (ex: verre, eau).
 - **Material : Reflection** : Effet miroir parfait avec limitation de rebonds via `_maxDepth` dans le moteur récursif.
 - **Render : Antialiasing (Supersampling)** : Lissage des bords par lancer de plusieurs rayons par pixel avec décalages sub-pixels aléatoires.
+- **Light : Phong reflection model** : Modèle d'illumination complet incluant les composantes ambiante, diffuse et spéculaire.
 
 ---
 

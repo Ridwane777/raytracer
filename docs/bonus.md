@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 9.0 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 11.0 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -22,6 +22,7 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Transparency** | `+ 0.5` | Rendu récursif dans le `Renderer`, combinant la couleur directe (via `opacity`) avec le rayon traversant l'objet. |
 | **Refraction** | `+ 1.0` | Déformation physique de la lumière implémentée via la Loi de Snell-Descartes dans `Renderer::computeRefraction()`. |
 | **Reflection** | `+ 0.5` | Effet miroir géré récursivement dans `Renderer`, mixant couleur de base et couleur réfléchie (formule $R = I - 2(I \cdot N)N$). |
+| **Phong reflection model** | `+ 2.0` | Implémentation complète : Ambiant + Diffus (Lambert) + Spéculaire (Phong). |
 
 ---
 
