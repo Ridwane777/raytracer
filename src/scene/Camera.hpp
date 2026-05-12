@@ -6,22 +6,22 @@
 
 class Camera {
 public:
-    Point3D  position;
-    Vector3D rotation;
-    int      width;
-    int      height;
-    double   fov;
-    int      antialiasing;
+  Point3D position;
+  Vector3D rotation;
+  int width;
+  int height;
+  double fov;
+  int antialiasing;
 
-    Camera();
-    Camera(const Camera& other);
-    Camera& operator=(const Camera& other);
-    ~Camera() = default;
+  Camera();
+  Camera(const Camera &other);
+  Camera &operator=(const Camera &other);
+  ~Camera() = default;
 
-    Camera(const Point3D& position, const Vector3D& rotation,
-           int width, int height, double fov, int antialiasing = 1);
-    Rectangle3D getScreen() const;
-    Ray getRayForPixel(double px, double py) const;
+  Camera(const Point3D &position, const Vector3D &rotation, int width,
+         int height, double fov, int antialiasing = 1);
+  Rectangle3D getScreen() const;
+  Ray getRayForPixel(double px, double py) const;
 };
 
-#endif 
+#endif

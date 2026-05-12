@@ -1,9 +1,11 @@
 #include "Plane.hpp"
 
 Plane::Plane(char axis, double position, const Color& color,
-             double transparency, double refractiveIndex, double reflectivity)
+             double transparency, double refractiveIndex, double reflectivity,
+             double shininess, const Color& specularColor)
     : _axis(axis), _position(position), _color(color),
-      _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity)
+      _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity),
+      _shininess(shininess), _specularColor(specularColor)
 {
 }
 
@@ -63,6 +65,17 @@ double Plane::getReflectivity() const
     return _reflectivity;
 }
 
+double Plane::getShininess() const
+{
+    return _shininess;
+}
+
+Color Plane::getSpecularColor() const
+{
+    return _specularColor;
+}
+
+
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params)
 {
     double axisVal = params.at("axis");
@@ -74,9 +87,14 @@ extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& para
     double transparency = params.count("transparency") ? params.at("transparency") : 0.0;
     double refractiveIndex = params.count("refractiveIndex") ? params.at("refractiveIndex") : 1.0;
     double reflectivity = params.count("reflectivity") ? params.at("reflectivity") : 0.0;
+    double shininess = params.count("shininess") ? params.at("shininess") : 0.0;
     Color  color(params.at("color_r"), params.at("color_g"), params.at("color_b"));
+    Color  spec(1, 1, 1);
+    if (params.count("spec_r") && params.count("spec_g") && params.count("spec_b")) {
+        spec = Color(params.at("spec_r"), params.at("spec_g"), params.at("spec_b"));
+    }
 
-    return new Plane(axis, position, color, transparency, refractiveIndex, reflectivity);
+    return new Plane(axis, position, color, transparency, refractiveIndex, reflectivity, shininess, spec);
 }
 
 extern "C" void destroyPrimitive(IPrimitive* p)

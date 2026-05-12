@@ -55,8 +55,17 @@ Si le plan est défini par une normale `N` et passe par un point `A` :
 * `t = ((A - OrigineRayon) . N) / (DirectionRayon . N)`
 * Si `(DirectionRayon . N) == 0` : Le rayon est parallèle au plan (pas d'intersection).
 
-**Le Cylindre et le Cône (Implémenté) :**
-Ils se résolvent également avec une équation quadratique (`at² + bt + c = 0`), mais avec des coefficients `a, b, c` qui ignorent l'axe directeur du cylindre/cône (généralement l'axe Y dans l'espace local).
+**Le Cylindre et le Cône (Détails) :**
+Ils se résolvent également avec une équation quadratique (`at² + bt + c = 0`) :
+* **Cylindre** (axe Y) :
+  * `a = Direction.x² + Direction.z²`
+  * `b = 2 * (Direction.x * (Origine.x - Centre.x) + Direction.z * (Origine.z - Centre.z))`
+  * `c = (Origine.x - Centre.x)² + (Origine.z - Centre.z)² - Rayon²`
+* **Cône** (axe Y, sommet S) :
+  * `k = tan(Angle)²`
+  * `a = Direction.x² + Direction.z² - k * Direction.y²`
+  * `b = 2 * (Direction.x*(Orig.x - S.x) + Direction.z*(Orig.z - S.z) - k*Direction.y*(Orig.y - S.y))`
+  * `c = (Orig.x - S.x)² + (Orig.z - S.z)² - k*(Orig.y - S.y)²`
 
 ---
 
@@ -64,7 +73,11 @@ Ils se résolvent également avec une équation quadratique (`at² + bt + c = 0`
 
 Pour chaque lumière, on ajoute sa contribution à la couleur du pixel.
 
-**Lumière Diffuse (Loi de Lambert) :**
+**Lumière Ambiante (Implémenté) :**
+Représente la lumière résiduelle qui atteint tous les points uniformément.
+* `Couleur_Finale = Intensité_Ambiante * Couleur_Objet`
+
+**Lumière Diffuse (Loi de Lambert) (Implémenté) :**
 Détermine la luminosité en fonction de l'angle entre la lumière et la normale.
 * `Intensité_Diffuse = Max(0, Normale . DirectionLumière)`
 * `Couleur = CouleurObjet * CouleurLumière * Intensité_Diffuse`
