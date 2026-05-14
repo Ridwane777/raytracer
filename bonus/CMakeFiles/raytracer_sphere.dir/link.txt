@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared -Wl,-soname,raytracer_sphere.so -o plugins/raytracer_sphere.so CMakeFiles/raytracer_sphere.dir/plugins/sphere/Sphere.cpp.o 
