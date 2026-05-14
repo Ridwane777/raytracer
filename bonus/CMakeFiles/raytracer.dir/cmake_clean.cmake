@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/raytracer.dir/src/factory/LightFactory.cpp.o"
+  "CMakeFiles/raytracer.dir/src/factory/LightFactory.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/factory/PrimitiveFactory.cpp.o"
+  "CMakeFiles/raytracer.dir/src/factory/PrimitiveFactory.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/main.cpp.o"
+  "CMakeFiles/raytracer.dir/src/main.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Color.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Color.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Matrix4x4.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Matrix4x4.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Point3D.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Point3D.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Ray.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Ray.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Rectangle3D.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Rectangle3D.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/math/Vector3D.cpp.o"
+  "CMakeFiles/raytracer.dir/src/math/Vector3D.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/output/PPMWriter.cpp.o"
+  "CMakeFiles/raytracer.dir/src/output/PPMWriter.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/parser/SceneParser.cpp.o"
+  "CMakeFiles/raytracer.dir/src/parser/SceneParser.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/renderer/Renderer.cpp.o"
+  "CMakeFiles/raytracer.dir/src/renderer/Renderer.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/scene/Camera.cpp.o"
+  "CMakeFiles/raytracer.dir/src/scene/Camera.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/scene/PrimitiveList.cpp.o"
+  "CMakeFiles/raytracer.dir/src/scene/PrimitiveList.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/scene/Scene.cpp.o"
+  "CMakeFiles/raytracer.dir/src/scene/Scene.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/scene/SceneBuilder.cpp.o"
+  "CMakeFiles/raytracer.dir/src/scene/SceneBuilder.cpp.o.d"
+  "CMakeFiles/raytracer.dir/src/scene/Transform.cpp.o"
+  "CMakeFiles/raytracer.dir/src/scene/Transform.cpp.o.d"
+  "raytracer"
+  "raytracer.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/raytracer.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
