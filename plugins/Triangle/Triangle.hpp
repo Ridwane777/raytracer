@@ -14,11 +14,21 @@ public:
     std::optional<double> hits(const Ray &ray) const override;
     Vector3D getNormal(const Point3D &point) const override;
     Color getColor(const Point3D &point) const override;
+    double getOpacity() const override;
+    double getRefractiveIndex() const override;
+    double getReflectivity() const override;
+    double getShininess() const override;
+    Color getSpecularColor() const override;
 
 private:
     Point3D _a, _b, _c;
     Vector3D _normal;
     Color _color;
+    double _transparency;
+    double _refractiveIndex;
+    double _reflectivity;
+    double _shininess;
+    Color  _specularColor;
 };
 
 extern "C" IPrimitive *createPrimitive(const std::map<std::string, double> &params);

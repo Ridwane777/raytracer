@@ -5,7 +5,7 @@
 
 Triangle::Triangle(const Point3D &a, const Point3D &b, const Point3D &c,
                    const Color &color)
-    : _a(a), _b(b), _c(c), _color(color)
+    : _a(a), _b(b), _c(c), _color(color), _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity), _shininess(shininess), _specularColor(specularColor)
 {
     Vector3D ab = b - a;
     Vector3D ac = c - a;
@@ -55,6 +55,31 @@ Color Triangle::getColor(const Point3D &point) const
 {
     (void)point;
     return _color;
+}
+
+double Triangle::getOpacity() const
+{
+    return 1.0 - _transparency;
+}
+
+double Triangle::getRefractiveIndex() const
+{
+    return _refractiveIndex;
+}
+
+double Triangle::getReflectivity() const
+{
+    return _reflectivity;
+}
+
+double Triangle::getShininess() const
+{
+    return _shininess;
+}
+
+Color Triangle::getSpecularColor() const
+{
+    return _specularColor;
 }
 
 extern "C" IPrimitive *createPrimitive(const std::map<std::string, double> &params)
