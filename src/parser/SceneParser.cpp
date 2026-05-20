@@ -127,6 +127,11 @@ PrimitivesConfig SceneParser::parsePrimitives(const libconfig::Setting &root) {
     for (int i = 0; i < triangles.getLength(); ++i)
       prims.triangles.push_back(parseTriangle(triangles[i]));
   }
+  if (p.exists("toruses")) {
+    const libconfig::Setting &toruses = p["toruses"];
+    for (int i = 0; i < toruses.getLength(); ++i)
+      prims.toruses.push_back(parseTorus(toruses[i]));
+  }
 
   return prims;
 }
@@ -185,6 +190,18 @@ TriangleConfig SceneParser::parseTriangle(const libconfig::Setting &s) {
   tri.color = parseColor(s);
   parseTransformData(s, tri);
   return tri;
+}
+
+TorusConfig SceneParser::parseTorus(const libconfig::Setting &s) {
+  TorusConfig torus;
+  torus.x = getDouble(s, "x");
+  torus.y = getDouble(s, "y");
+  torus.z = getDouble(s, "z");
+  torus.r1 = getDouble(s, "r1", 1.0);
+  torus.r2 = getDouble(s, "r2", 0.2);
+  torus.color = parseColor(s);
+  parseTransformData(s, torus);
+  return torus;
 }
 
 LightsConfig SceneParser::parseLights(const libconfig::Setting &root) {

@@ -81,6 +81,14 @@ struct TriangleConfig : public TransformData
     Colors color;
 };
 
+struct TorusConfig : public TransformData
+{
+    double x = 0, y = 0, z = 0;
+    double r1 = 1.0;
+    double r2 = 0.2;
+    Colors color;
+};
+
 struct PrimitivesConfig
 {
     std::vector<SphereConfig> spheres;
@@ -88,6 +96,7 @@ struct PrimitivesConfig
     std::vector<CylinderConfig> cylinders;
     std::vector<ConeConfig> cones;
     std::vector<TriangleConfig> triangles;
+    std::vector<TorusConfig> toruses;
 };
 
 struct PointLight

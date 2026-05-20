@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 11.0 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 13.0 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -23,6 +23,8 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Refraction** | `+ 1.0` | Déformation physique de la lumière implémentée via la Loi de Snell-Descartes dans `Renderer::computeRefraction()`. |
 | **Reflection** | `+ 0.5` | Effet miroir géré récursivement dans `Renderer`, mixant couleur de base et couleur réfléchie (formule $R = I - 2(I \cdot N)N$). |
 | **Phong reflection model** | `+ 2.0` | Implémentation complète : Ambiant + Diffus (Lambert) + Spéculaire (Phong). |
+| **Triangle** | `+ 1.0` | Plugin dynamique `triangle.so` pour le rendu de polygones à trois sommets. |
+| **Torus** | `+ 1.0` | Plugin dynamique `torus.so` résolvant analytiquement l'équation quartique (4e degré). |
 
 ---
 
@@ -42,7 +44,6 @@ Voici une sélection des bonus les plus rapides à intégrer avec l'architecture
 *(Scale, Shear, Colored Lights, Transparence validés !)*
 
 ### 4. Primitives & Modèles 3D (Objectif en cours)
-* **Triangles (+1.0 pt)** : Implémentation de l'algorithme de Möller–Trumbore. Indispensable pour la suite.
 * **.OBJ file (+1.0 pt)** : Création d'un parser pour lire un fichier de modèle 3D `.obj` et le convertir en une liste de triangles dans la scène. Attention aux performances sur les gros modèles.
 
 ### 5. Matériaux Avancés
