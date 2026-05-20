@@ -40,6 +40,7 @@ void SceneBuilder::buildPrimitives(Scene& scene, const PrimitivesConfig& cfg)
     for (const auto& c : cfg.cylinders) addCylinder(scene, c);
     for (const auto& c : cfg.cones)     addCone    (scene, c);
     for (const auto& t : cfg.triangles) addTriangle(scene, t);
+    for (const auto& t : cfg.toruses)   addTorus   (scene, t);
 }
 
 void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
@@ -192,6 +193,35 @@ void SceneBuilder::addTriangle(Scene& scene, const TriangleConfig& cfg)
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         throw Error("[Triangle] " + std::string(e.what()));
+    }
+}
+
+void SceneBuilder::addTorus(Scene& scene, const TorusConfig& cfg)
+{
+    std::map<std::string, double> params = {
+        {"x",             0.0},
+        {"y",             0.0},
+        {"z",             0.0},
+        {"r1",            cfg.r1},
+        {"r2",            cfg.r2},
+        {"transparency",  cfg.transparency},
+        {"refractiveIndex", cfg.refractiveIndex},
+        {"reflectivity",  cfg.reflectivity},
+        {"shininess",     cfg.shininess},
+        {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+        {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+        {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+        {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+        {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+        {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
+    };
+    try {
+        auto base = _primitiveFactory.create(pluginPath("torus"), params);
+        Matrix4x4 tr = buildTransformMatrix(cfg, cfg.x, cfg.y, cfg.z);
+        auto translated = std::make_shared<Transform>(base, tr);
+        scene.addPrimitive(translated);
+    } catch (const std::exception& e) {
+        throw Error("[Torus] " + std::string(e.what()));
     }
 }
 

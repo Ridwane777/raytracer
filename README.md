@@ -32,6 +32,8 @@ L'implémentation actuelle couvre toutes les exigences principales ainsi que de 
 - **Light** : Drop shadows (Ombres portées réalistes via "Shadow Rays").
 
 ### 🏆 COULD (Bonus & Fonctionnalités Avancées)
+- **Primitives : Triangle** : Support des polygones plats à trois sommets (plugin dynamique `triangle.so`) utilisant l'intersection plan-polygone.
+- **Primitives : Torus** : Support de la primitive complexe de tore (plugin dynamique `torus.so`) par résolution analytique d'une équation polynomiale du 4ème degré.
 - **Transformations : Transformation Matrix** : Le système utilise de véritables matrices 4x4 combinées et inversées pour gérer de façon transparente toutes les opérations de positionnement (Pattern Decorator).
 - **Transformations : Scale & Shear** : Déformation d'échelle et cisaillement (shear) implémentés directement dans le moteur matriciel, applicables à n'importe quelle primitive sans retoucher son code.
 - **Light : Multiple lights** : L'architecture supporte une liste illimitée de sources lumineuses (ambiance, directionnelles, ponctuelles) additionnant leurs contributions.
