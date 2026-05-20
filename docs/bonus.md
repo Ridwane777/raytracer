@@ -25,7 +25,7 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Phong reflection model** | `+ 2.0` | Implémentation complète : Ambiant + Diffus (Lambert) + Spéculaire (Phong). |
 | **Triangle** | `+ 1.0` | Plugin dynamique `triangle.so` pour le rendu de polygones à trois sommets. |
 | **Torus** | `+ 1.0` | Plugin dynamique `torus.so` résolvant analytiquement l'équation quartique (4e degré). |
-| **.OBJ file** | `+ 1.0` | Parser de fichiers Wavefront `.obj` avec triangulation dynamique à la volée. |
+| **.OBJ file** | `+ 1.0` | Parser de fichiers Wavefront `.obj` avec triangulation dynamique à la volée. | 
 
 ---
 

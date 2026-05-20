@@ -18,8 +18,7 @@ public:
   Camera &operator=(const Camera &other);
   ~Camera() = default;
 
-  Camera(const Point3D &position, const Vector3D &rotation, int width,
-         int height, double fov, int antialiasing = 1);
+  Camera(const Point3D &position, const Vector3D &rotation, int width, int height, double fov, int antialiasing = 1);
   Rectangle3D getScreen() const;
   Ray getRayForPixel(double px, double py) const;
 };
