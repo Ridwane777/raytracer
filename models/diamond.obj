@@ -1,0 +1,35 @@
+# Low-poly Diamond - 16 triangles
+# Top peak
+v  0.0  10.0  0.0
+# Upper ring (4 vertices)
+v  6.0   4.0  0.0
+v  0.0   4.0  6.0
+v -6.0   4.0  0.0
+v  0.0   4.0 -6.0
+# Lower ring (4 vertices, wider)
+v  8.0  -3.0  0.0
+v  0.0  -3.0  8.0
+v -8.0  -3.0  0.0
+v  0.0  -3.0 -8.0
+# Bottom culet peak
+v  0.0 -12.0  0.0
+
+# Top crown (4 triangles)
+f 1 2 3
+f 1 3 4
+f 1 4 5
+f 1 5 2
+# Middle belt (8 triangles)
+f 2 6 7
+f 2 7 3
+f 3 7 8
+f 3 8 4
+f 4 8 9
+f 4 9 5
+f 5 9 6
+f 5 6 2
+# Bottom pavilion (4 triangles)
+f 10 6 7
+f 10 7 8
+f 10 8 9
+f 10 9 6
