@@ -122,6 +122,11 @@ PrimitivesConfig SceneParser::parsePrimitives(const libconfig::Setting &root) {
     for (int i = 0; i < cones.getLength(); ++i)
       prims.cones.push_back(parseCone(cones[i]));
   }
+  if (p.exists("triangles")) {
+    const libconfig::Setting &triangles = p["triangles"];
+    for (int i = 0; i < triangles.getLength(); ++i)
+      prims.triangles.push_back(parseTriangle(triangles[i]));
+  }
 
   return prims;
 }
@@ -170,6 +175,16 @@ ConeConfig SceneParser::parseCone(const libconfig::Setting &s) {
   cone.color = parseColor(s);
   parseTransformData(s, cone);
   return cone;
+}
+
+TriangleConfig SceneParser::parseTriangle(const libconfig::Setting &s) {
+  TriangleConfig tri;
+  if (s.exists("a")) tri.a = parseVec3(s["a"]);
+  if (s.exists("b")) tri.b = parseVec3(s["b"]);
+  if (s.exists("c")) tri.c = parseVec3(s["c"]);
+  tri.color = parseColor(s);
+  parseTransformData(s, tri);
+  return tri;
 }
 
 LightsConfig SceneParser::parseLights(const libconfig::Setting &root) {

@@ -11,12 +11,14 @@ public:
 
     Renderer(const Scene& scene, int maxDepth = 0);
     std::vector<std::vector<Color>> render() const;
+    Color computeColorPublic(const Ray& ray, int depth) const;
 
 private:
     const Scene& _scene;
     int          _maxDepth;
 
     Color computeColor(const Ray& ray, int depth) const;
+
     Color computeDirectLighting(const IPrimitive& primitive,
                                 const HitInfo& info) const;
     Color computeReflection(const HitInfo& info, int depth) const;

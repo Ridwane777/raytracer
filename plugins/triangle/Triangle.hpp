@@ -8,7 +8,9 @@
 class Triangle : public IPrimitive
 {
 public:
-    Triangle(const Point3D &a, const Point3D &b, const Point3D &c, const Color &color);
+    Triangle(const Point3D &a, const Point3D &b, const Point3D &c, const Color &color,
+                    double transparency, double refractiveIndex, double reflectivity,
+                   double shininess, const Color& specularColor);
     ~Triangle() override = default;
 
     std::optional<double> hits(const Ray &ray) const override;

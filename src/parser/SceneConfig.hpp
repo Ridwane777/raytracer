@@ -73,12 +73,21 @@ struct ConeConfig : public TransformData
     Colors color;
 };
 
+struct TriangleConfig : public TransformData
+{
+    Vec3 a;
+    Vec3 b;
+    Vec3 c;
+    Colors color;
+};
+
 struct PrimitivesConfig
 {
     std::vector<SphereConfig> spheres;
     std::vector<PlaneConfig> planes;
     std::vector<CylinderConfig> cylinders;
     std::vector<ConeConfig> cones;
+    std::vector<TriangleConfig> triangles;
 };
 
 struct PointLight

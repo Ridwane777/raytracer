@@ -42,6 +42,10 @@ std::vector<std::vector<Color>> Renderer::render() const {
   return pixels;
 }
 
+Color Renderer::computeColorPublic(const Ray &ray, int depth) const {
+  return computeColor(ray, depth);
+}
+
 Color Renderer::computeColor(const Ray &ray, int depth) const {
 
   if (depth > _maxDepth)

@@ -22,6 +22,7 @@ private:
   PlaneConfig parsePlane(const libconfig::Setting &p);
   CylinderConfig parseCylinder(const libconfig::Setting &c);
   ConeConfig parseCone(const libconfig::Setting &c);
+  TriangleConfig parseTriangle(const libconfig::Setting &t);
   Colors parseColor(const libconfig::Setting &setting);
 
   LightsConfig parseLights(const libconfig::Setting &root);

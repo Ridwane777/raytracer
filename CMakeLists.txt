@@ -5,8 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PROJECT_COMPILE_FLAGS -Wall -Wextra -Werror -fno-gnu-unique)
 
-# --- Plugins ---
-set(PLUGINS sphere plane cylinder cone ambient directional point)
+set(PLUGINS sphere plane cylinder cone ambient directional point triangle)
 
 foreach(PLUGIN ${PLUGINS})
     file(GLOB PLUGIN_SOURCES "plugins/${PLUGIN}/*.cpp")
@@ -20,10 +19,14 @@ foreach(PLUGIN ${PLUGINS})
 endforeach()
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(APPEND SOURCES "sfml/SFMLViewer.cpp")
+
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+
 add_executable(raytracer ${SOURCES})
-target_include_directories(raytracer PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(raytracer PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(raytracer PRIVATE ${PROJECT_COMPILE_FLAGS})
-target_link_libraries(raytracer PRIVATE dl config++)
+target_link_libraries(raytracer PRIVATE dl config++ sfml-graphics sfml-window sfml-system)
 target_link_options(raytracer PRIVATE -rdynamic)
 set_target_properties(raytracer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"

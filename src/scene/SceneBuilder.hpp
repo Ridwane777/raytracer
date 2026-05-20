@@ -28,6 +28,7 @@ private:
     void addPlane   (Scene& scene, const PlaneConfig&    cfg);
     void addCylinder(Scene& scene, const CylinderConfig& cfg);
     void addCone    (Scene& scene, const ConeConfig&     cfg);
+    void addTriangle(Scene& scene, const TriangleConfig& cfg);
 
     void buildLights(Scene& scene, const LightsConfig& cfg);
 

@@ -4,7 +4,8 @@
 #include <string>
 
 Triangle::Triangle(const Point3D &a, const Point3D &b, const Point3D &c,
-                   const Color &color)
+                   const Color &color, double transparency, double refractiveIndex,
+                   double reflectivity, double shininess, const Color& specularColor)
     : _a(a), _b(b), _c(c), _color(color), _transparency(transparency), _refractiveIndex(refractiveIndex), _reflectivity(reflectivity), _shininess(shininess), _specularColor(specularColor)
 {
     Vector3D ab = b - a;
@@ -96,6 +97,16 @@ extern "C" IPrimitive *createPrimitive(const std::map<std::string, double> &para
     double cy = params.count("cy") ? params.at("cy") : -1.0;
     double cz = params.count("cz") ? params.at("cz") : 0.0;
 
+    double  transparency = params.count("transparency") ? params.at("transparency") : 0.0;
+    double  refractiveIndex = params.count("refractiveIndex") ? params.at("refractiveIndex") : 1.0;
+    double  reflectivity = params.count("reflectivity") ? params.at("reflectivity") : 0.0;
+    double  shininess = params.count("shininess") ? params.at("shininess") : 0.0;
+
+    Color   spec(1, 1, 1);
+    if (params.count("spec_r") && params.count("spec_g") && params.count("spec_b")) {
+        spec = Color(params.at("spec_r"), params.at("spec_g"), params.at("spec_b"));
+    }
+
     double r = params.count("color_r") ? params.at("color_r") : 1.0;
     double g = params.count("color_g") ? params.at("color_g") : 0.0;
     double b = params.count("color_b") ? params.at("color_b") : 0.0;
@@ -104,7 +115,9 @@ extern "C" IPrimitive *createPrimitive(const std::map<std::string, double> &para
         Point3D(ax, ay, az),
         Point3D(bx, by, bz),
         Point3D(cx, cy, cz),
-        Color(r, g, b));
+        Color(r, g, b),
+        transparency, refractiveIndex, reflectivity, shininess, spec
+    );
 }
 
 extern "C" void destroyPrimitive(IPrimitive *primitive) { delete primitive; }
