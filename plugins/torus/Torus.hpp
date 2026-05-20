@@ -25,8 +25,8 @@ public:
 
 private:
     Point3D _center;
-    double  _r1; // Major radius
-    double  _r2; // Minor radius
+    double  _r1;
+    double  _r2;
     Color   _color;
     double  _transparency;
     double  _refractiveIndex;
@@ -34,7 +34,6 @@ private:
     double  _shininess;
     Color   _specularColor;
 
-    // Helper functions for solving quartic equations
     static int solveQuadric(double c[3], double s[2]);
     static int solveCubic(double c[4], double s[3]);
     static int solveQuartic(double c[5], double s[4]);
