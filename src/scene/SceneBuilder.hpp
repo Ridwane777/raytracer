@@ -30,6 +30,7 @@ private:
     void addCone    (Scene& scene, const ConeConfig&     cfg);
     void addTriangle(Scene& scene, const TriangleConfig& cfg);
     void addTorus   (Scene& scene, const TorusConfig&    cfg);
+    void addObj     (Scene& scene, const ObjConfig&      cfg);
 
     void buildLights(Scene& scene, const LightsConfig& cfg);
 

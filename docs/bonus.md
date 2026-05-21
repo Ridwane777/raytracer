@@ -2,7 +2,7 @@
 
 Ce fichier recense l'état d'avancement des fonctionnalités bonus (Coulds) telles que définies dans le barème officiel.
 
-## 🏆 Bonus DÉJÀ VALIDÉS (Total : 13.0 points)
+## 🏆 Bonus DÉJÀ VALIDÉS (Total : 14.0 points)
 
 Notre architecture actuelle permet de cocher ces bonus sans écrire une seule ligne de code supplémentaire :
 
@@ -25,6 +25,7 @@ Notre architecture actuelle permet de cocher ces bonus sans écrire une seule li
 | **Phong reflection model** | `+ 2.0` | Implémentation complète : Ambiant + Diffus (Lambert) + Spéculaire (Phong). |
 | **Triangle** | `+ 1.0` | Plugin dynamique `triangle.so` pour le rendu de polygones à trois sommets. |
 | **Torus** | `+ 1.0` | Plugin dynamique `torus.so` résolvant analytiquement l'équation quartique (4e degré). |
+| **.OBJ file** | `+ 1.0` | Parser de fichiers Wavefront `.obj` avec triangulation dynamique à la volée. |
 
 ---
 
@@ -44,7 +45,7 @@ Voici une sélection des bonus les plus rapides à intégrer avec l'architecture
 *(Scale, Shear, Colored Lights, Transparence validés !)*
 
 ### 4. Primitives & Modèles 3D (Objectif en cours)
-* **.OBJ file (+1.0 pt)** : Création d'un parser pour lire un fichier de modèle 3D `.obj` et le convertir en une liste de triangles dans la scène. Attention aux performances sur les gros modèles.
+*(Toutes les primitives et fichiers OBJ ont été validés !)*
 
 ### 5. Matériaux Avancés
 *(Toutes les tâches de réflexion et réfraction ont été validées !)*

@@ -24,6 +24,7 @@ private:
   ConeConfig parseCone(const libconfig::Setting &c);
   TriangleConfig parseTriangle(const libconfig::Setting &t);
   TorusConfig parseTorus(const libconfig::Setting &t);
+  ObjConfig parseObj(const libconfig::Setting &o);
   Colors parseColor(const libconfig::Setting &setting);
 
   LightsConfig parseLights(const libconfig::Setting &root);
