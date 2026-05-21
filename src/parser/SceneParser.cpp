@@ -132,6 +132,11 @@ PrimitivesConfig SceneParser::parsePrimitives(const libconfig::Setting &root) {
     for (int i = 0; i < toruses.getLength(); ++i)
       prims.toruses.push_back(parseTorus(toruses[i]));
   }
+  if (p.exists("objs")) {
+    const libconfig::Setting &objs = p["objs"];
+    for (int i = 0; i < objs.getLength(); ++i)
+      prims.objs.push_back(parseObj(objs[i]));
+  }
 
   return prims;
 }
@@ -202,6 +207,18 @@ TorusConfig SceneParser::parseTorus(const libconfig::Setting &s) {
   torus.color = parseColor(s);
   parseTransformData(s, torus);
   return torus;
+}
+
+ObjConfig SceneParser::parseObj(const libconfig::Setting &s) {
+  ObjConfig obj;
+  if (s.exists("filepath"))
+    obj.filepath = s["filepath"].c_str();
+  obj.x = getDouble(s, "x");
+  obj.y = getDouble(s, "y");
+  obj.z = getDouble(s, "z");
+  obj.color = parseColor(s);
+  parseTransformData(s, obj);
+  return obj;
 }
 
 LightsConfig SceneParser::parseLights(const libconfig::Setting &root) {

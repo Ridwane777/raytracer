@@ -3,6 +3,8 @@
 #include "../math/Point3D.hpp"
 #include "../math/Vector3D.hpp"
 #include <memory>
+#include <fstream>
+#include <sstream>
 #include "../Error.hpp"
 
 SceneBuilder::SceneBuilder(const std::string& pluginDir)
@@ -41,6 +43,7 @@ void SceneBuilder::buildPrimitives(Scene& scene, const PrimitivesConfig& cfg)
     for (const auto& c : cfg.cones)     addCone    (scene, c);
     for (const auto& t : cfg.triangles) addTriangle(scene, t);
     for (const auto& t : cfg.toruses)   addTorus   (scene, t);
+    for (const auto& o : cfg.objs)      addObj     (scene, o);
 }
 
 void SceneBuilder::addSphere(Scene& scene, const SphereConfig& cfg)
@@ -222,6 +225,92 @@ void SceneBuilder::addTorus(Scene& scene, const TorusConfig& cfg)
         scene.addPrimitive(translated);
     } catch (const std::exception& e) {
         throw Error("[Torus] " + std::string(e.what()));
+    }
+}
+
+void SceneBuilder::addObj(Scene& scene, const ObjConfig& cfg)
+{
+    std::ifstream file(cfg.filepath);
+    if (!file.is_open()) {
+        throw Error("[Obj] Cannot open .obj file: " + cfg.filepath);
+    }
+
+    std::vector<Point3D> vertices;
+    std::string line;
+
+    Matrix4x4 tr = buildTransformMatrix(cfg, cfg.x, cfg.y, cfg.z);
+
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#')
+            continue;
+
+        std::stringstream ss(line);
+        std::string type;
+        ss >> type;
+
+        if (type == "v") {
+            double vx, vy, vz;
+            if (ss >> vx >> vy >> vz) {
+                vertices.push_back(Point3D(vx, vy, vz));
+            }
+        } else if (type == "f") {
+            std::vector<int> faceIndices;
+            std::string token;
+            while (ss >> token) {
+                std::stringstream tokenStream(token);
+                std::string indexStr;
+                std::getline(tokenStream, indexStr, '/');
+                if (!indexStr.empty()) {
+                    int idx = std::stoi(indexStr);
+                    if (idx < 0) {
+                        idx = static_cast<int>(vertices.size()) + idx + 1;
+                    }
+                    faceIndices.push_back(idx);
+                }
+            }
+
+            if (faceIndices.size() >= 3) {
+                for (size_t i = 1; i < faceIndices.size() - 1; ++i) {
+                    size_t idx0 = faceIndices[0] - 1;
+                    size_t idx1 = faceIndices[i] - 1;
+                    size_t idx2 = faceIndices[i + 1] - 1;
+
+                    if (idx0 < vertices.size() && idx1 < vertices.size() && idx2 < vertices.size()) {
+                        Point3D a = tr.transformPoint(vertices[idx0]);
+                        Point3D b = tr.transformPoint(vertices[idx1]);
+                        Point3D c = tr.transformPoint(vertices[idx2]);
+
+                        std::map<std::string, double> params = {
+                            {"ax",            a.X},
+                            {"ay",            a.Y},
+                            {"az",            a.Z},
+                            {"bx",            b.X},
+                            {"by",            b.Y},
+                            {"bz",            b.Z},
+                            {"cx",            c.X},
+                            {"cy",            c.Y},
+                            {"cz",            c.Z},
+                            {"transparency",  cfg.transparency},
+                            {"refractiveIndex", cfg.refractiveIndex},
+                            {"reflectivity",  cfg.reflectivity},
+                            {"shininess",     cfg.shininess},
+                            {"color_r",       static_cast<double>(cfg.color.r) / 255.0},
+                            {"color_g",       static_cast<double>(cfg.color.g) / 255.0},
+                            {"color_b",       static_cast<double>(cfg.color.b) / 255.0},
+                            {"spec_r",        static_cast<double>(cfg.specular.r) / 255.0},
+                            {"spec_g",        static_cast<double>(cfg.specular.g) / 255.0},
+                            {"spec_b",        static_cast<double>(cfg.specular.b) / 255.0}
+                        };
+                        try {
+                            auto triangle = _primitiveFactory.create(pluginPath("triangle"), params);
+                            scene.addPrimitive(triangle);
+                        } catch (const std::exception& e) {
+                            throw Error("[Obj Triangle] " + std::string(e.what()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
