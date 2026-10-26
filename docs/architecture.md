@@ -1,58 +1,56 @@
 # Architecture — Raytracer
 
-## Objectif du projet
+## Goal
 
-Le but est de créer un programme capable de générer une image réaliste à partir d'un fichier de
-description de scène. Le programme simule le trajet inverse de la lumière : pour chaque pixel de
-l'image finale, un rayon est envoyé depuis la caméra dans la scène 3D. Si ce rayon touche un
-objet, la couleur du pixel est calculée en fonction des lumières présentes. Le résultat est écrit
-dans un fichier PPM.
+The program generates a realistic image from a scene description file. It simulates the reverse
+path of light: for each pixel of the final image, a ray is cast from the camera into the 3D scene.
+If the ray hits an object, the pixel color is computed from the lights in the scene. The result is
+written to a PPM file.
 
 ```
 ./raytracer scene.cfg   →   image.ppm
 ```
 
-Les fonctionnalités obligatoires (`must`) sont : Sphere, Plane, Translation, Directional light,
-Ambient light, Flat color, sortie PPM. Les fonctionnalités `should` (Cylinder, Cone, Rotation,
-Drop shadows) et `could` (Phong, Reflection, Refraction, Multithreading...) doivent rester
-atteignables sans refonte de l'architecture.
+The core features are: Sphere, Plane, Translation, Directional light, Ambient light, Flat color,
+PPM output. Intermediate features (Cylinder, Cone, Rotation, Drop shadows) and advanced ones
+(Phong, Reflection, Refraction, Multithreading...) must stay reachable without redesigning the
+architecture.
 
 ---
 
-## Décisions architecturales clés
+## Key architectural decisions
 
-Quatre pièges à éviter dès le départ pour ne pas bloquer les `should`/`could` :
+Four traps to avoid from the start so the intermediate/advanced features are not blocked:
 
-### 1. Transformations via Decorator, pas via IPrimitive
+### 1. Transformations through a Decorator, not through IPrimitive
 
-Ne pas mettre `translate()` / `rotate()` / `scale()` dans `IPrimitive`. À la place, une classe
-`Transform` enveloppe n'importe quelle primitive et lui applique une matrice. Ajouter la rotation
-(should) ou le scale (could) ne touche jamais aux primitives concrètes.
+Do not put `translate()` / `rotate()` / `scale()` in `IPrimitive`. Instead, a `Transform` class
+wraps any primitive and applies a matrix to it. Adding rotation or scale never touches the
+concrete primitives.
 
-Le principe : on transforme le rayon entrant dans le repère local de l'objet, plutôt que de
-déplacer l'objet lui-même.
+The idea: transform the incoming ray into the object's local space instead of moving the object
+itself.
 
-### 2. ILight reçoit la scène pour les ombres portées
+### 2. ILight receives the scene for drop shadows
 
-`computeIntensity(point, normal)` ne suffit pas pour les ombres (should) : la lumière doit pouvoir
-envoyer un rayon secondaire vers elle-même pour vérifier si un objet est entre le point touché et
-la source. `ILight::computeContribution` reçoit donc la scène entière et un `HitInfo` complet
-(incluant la direction de la caméra, utile pour Phong).
+`computeIntensity(point, normal)` is not enough for shadows: the light must be able to cast a
+secondary ray towards itself to check whether an object lies between the hit point and the
+source. `ILight::computeContribution` therefore receives the whole scene and a full `HitInfo`
+(including the view direction, needed for Phong).
 
-### 3. Renderer récursif dès le départ
+### 3. Recursive Renderer from the start
 
-La boucle de rendu appelle `computeColor(ray, depth)` avec un paramètre de profondeur. À `depth 0`
-c'est un rendu plat. À `depth > 0` c'est les reflets et réfractions (could). Aucune réécriture
-nécessaire plus tard.
+The render loop calls `computeColor(ray, depth)` with a depth parameter. At `depth 0` it is a flat
+render. At `depth > 0` it handles reflections and refractions. No rewrite needed later.
 
-### 4. Renderer stateless pour le multithreading
+### 4. Stateless Renderer for multithreading
 
-Le Renderer n'a aucun état mutable. `render()` retourne un buffer local, jamais un attribut de
-classe. Les threads peuvent travailler sur des bandes de pixels indépendantes sans mutex.
+The Renderer has no mutable state. `render()` returns a local buffer, never a class member.
+Threads can work on independent pixel bands without a mutex.
 
 ---
 
-## Vue d'ensemble des couches
+## Layer overview
 
 ```
 ┌──────────────────────────────────────────┐
@@ -71,21 +69,21 @@ classe. Les threads peuvent travailler sur des bandes de pixels indépendantes s
 └─────────────────┬────────────────────────┘
                   │
 ┌─────────────────▼────────────────────────┐
-│              Renderer                    │  stateless, récursif
+│              Renderer                    │  stateless, recursive
 └─────────────────┬────────────────────────┘
                   │
 ┌─────────────────▼────────────────────────┐
 │             PPMWriter                    │
 └──────────────────────────────────────────┘
 
-Fondations transversales :
+Cross-cutting foundations:
   math/      →  Point3D, Vector3D, Ray, Rectangle3D, Color, Matrix4x4
-  plugins/   →  .so chargés via dlopen (Sphere, Plane, DirectionalLight…)
+  plugins/   →  .so loaded via dlopen (Sphere, Plane, DirectionalLight…)
 ```
 
 ---
 
-## Couche Math
+## Math layer
 
 ### `Point3D`
 
@@ -131,30 +129,30 @@ public:
 class Ray {
 public:
     Point3D  origin;
-    Vector3D direction; // toujours normalisée
+    Vector3D direction; // always normalized
 
     Ray(const Point3D& origin, const Vector3D& direction);
 
-    Point3D at(double t) const; // retourne O + t*D
+    Point3D at(double t) const; // returns O + t*D
 };
 ```
 
 ### `Rectangle3D`
 
-Plan image virtuel dans la scène 3D. Utilisé par la caméra pour convertir les pixels en points 3D.
+Virtual image plane in the 3D scene. Used by the camera to convert pixels into 3D points.
 
 ```cpp
 class Rectangle3D {
 public:
-    Point3D  origin;      // coin bas-gauche
-    Vector3D bottom_side; // vecteur vers le coin bas-droit
-    Vector3D left_side;   // vecteur vers le coin haut-gauche
+    Point3D  origin;      // bottom-left corner
+    Vector3D bottom_side; // vector to the bottom-right corner
+    Vector3D left_side;   // vector to the top-left corner
 
     Rectangle3D(const Point3D& origin,
                 const Vector3D& bottom_side,
                 const Vector3D& left_side);
 
-    // P = origin + u * bottom_side + v * left_side   (u, v dans [0, 1])
+    // P = origin + u * bottom_side + v * left_side   (u, v in [0, 1])
     Point3D pointAt(double u, double v) const;
 };
 ```
@@ -164,16 +162,16 @@ public:
 ```cpp
 class Color {
 public:
-    double r, g, b; // valeurs dans [0.0, 1.0]
+    double r, g, b; // values in [0.0, 1.0]
 
     Color(double r = 0, double g = 0, double b = 0);
 
     Color operator+(const Color& other) const;
     Color operator*(double factor) const;
-    Color operator*(const Color& other) const; // composante par composante
-    Color clamp() const;                       // force dans [0, 1]
+    Color operator*(const Color& other) const; // component-wise
+    Color clamp() const;                       // forces into [0, 1]
 
-    int toInt_r() const; // retourne 0-255 pour l'écriture PPM
+    int toInt_r() const; // returns 0-255 for PPM output
     int toInt_g() const;
     int toInt_b() const;
 };
@@ -181,15 +179,15 @@ public:
 
 ### `Matrix4x4`
 
-Nécessaire dès le départ pour le Decorator Transform. Gère translation, rotation et scale en une
-seule matrice. Permet les transformations composées sans modifier les primitives.
+Needed from the start for the Transform Decorator. Handles translation, rotation and scale in a
+single matrix. Allows composed transformations without modifying the primitives.
 
 ```cpp
 class Matrix4x4 {
 public:
     double m[4][4];
 
-    Matrix4x4();                          // matrice identité
+    Matrix4x4();                          // identity matrix
     static Matrix4x4 identity();
     static Matrix4x4 translation(const Vector3D& t);
     static Matrix4x4 rotationX(double deg);
@@ -202,14 +200,14 @@ public:
 
     Point3D  transformPoint(const Point3D& p) const;
     Vector3D transformVector(const Vector3D& v) const;
-    // Transforme un rayon dans le repère local de l'objet.
+    // Transforms a ray into the object's local space.
     Ray      transformRay(const Ray& ray) const;
 };
 ```
 
 ---
 
-## Couche Interfaces
+## Interfaces layer
 
 ### `IPrimitive`
 
@@ -218,41 +216,41 @@ class IPrimitive {
 public:
     virtual ~IPrimitive() = default;
 
-    // Retourne nullopt si pas d'intersection, sinon t > 0 (distance le long du rayon).
+    // Returns nullopt if no intersection, otherwise t > 0 (distance along the ray).
     virtual std::optional<double> hits(const Ray& ray) const = 0;
 
-    // Normale à la surface au point donné (normalisée, vers l'extérieur).
+    // Surface normal at the given point (normalized, pointing outward).
     virtual Vector3D getNormal(const Point3D& point) const = 0;
 
-    // Couleur flat de la primitive au point donné.
-    // Le point est fourni pour les textures procédurales (could).
+    // Flat color of the primitive at the given point.
+    // The point is provided for procedural textures.
     virtual Color getColor(const Point3D& point) const = 0;
 
-    // Paramètres optiques avancés (pour Réfraction / Réflexion)
+    // Advanced optical parameters (for Refraction / Reflection)
     virtual double getOpacity() const = 0;
     virtual double getRefractiveIndex() const = 0;
     virtual double getReflectivity() const = 0;
 };
-// Pas de translate() ici : les transformations passent par Transform (Decorator).
+// No translate() here: transformations go through Transform (Decorator).
 ```
 
-### `ILight` et `HitInfo`
+### `ILight` and `HitInfo`
 
 ```cpp
-// Informations sur le point touché, passées à chaque lumière.
+// Information about the hit point, passed to each light.
 struct HitInfo {
-    Point3D  point;     // point d'intersection dans la scène
-    Vector3D normal;    // normale de la surface en ce point
-    Vector3D viewDir;   // direction normalisée vers la caméra (pour Phong)
+    Point3D  point;     // intersection point in the scene
+    Vector3D normal;    // surface normal at this point
+    Vector3D viewDir;   // normalized direction towards the camera (for Phong)
 };
 
 class ILight {
 public:
     virtual ~ILight() = default;
 
-    // Calcule la contribution colorée de cette lumière au point touché.
-    // Reçoit la scène entière pour pouvoir envoyer des rayons d'ombre (drop shadows).
-    // Retourne Color(0,0,0) si le point est dans l'ombre.
+    // Computes this light's colored contribution at the hit point.
+    // Receives the whole scene so it can cast shadow rays (drop shadows).
+    // Returns Color(0,0,0) if the point is in shadow.
     virtual Color computeContribution(const HitInfo& hit,
                                       const IPrimitive& scene) const = 0;
 };
@@ -260,42 +258,42 @@ public:
 
 ---
 
-## Design Pattern : Decorator — `Transform`
+## Design Pattern: Decorator — `Transform`
 
-Enveloppe n'importe quelle `IPrimitive` et lui applique une matrice de transformation. Ajouter la
-rotation ou le scale n'impose aucune modification aux primitives concrètes.
+Wraps any `IPrimitive` and applies a transformation matrix to it. Adding rotation or scale
+requires no change to the concrete primitives.
 
 ```cpp
 class Transform : public IPrimitive {
 private:
     IPrimitive* _wrapped;
-    Matrix4x4   _worldToLocal; // inverse de la matrice de transformation
+    Matrix4x4   _worldToLocal; // inverse of the transformation matrix
     Matrix4x4   _localToWorld;
 
 public:
     Transform(IPrimitive* primitive, const Matrix4x4& transform);
 
-    // Transforme le rayon dans le repère local, délègue à _wrapped,
-    // puis retransforme le point de retour dans le repère monde.
+    // Transforms the ray into local space, delegates to _wrapped,
+    // then maps the hit point back into world space.
     std::optional<double> hits(const Ray& ray) const override;
 
-    // Transforme la normale du repère local vers le repère monde
-    // (utilise la transposée de l'inverse pour conserver l'orthogonalité).
+    // Transforms the normal from local to world space
+    // (uses the inverse transpose to preserve orthogonality).
     Vector3D getNormal(const Point3D& point) const override;
 
     Color getColor(const Point3D& point) const override;
 
-    // Propagation des paramètres optiques vers _wrapped
+    // Forwards optical parameters to _wrapped
     double getOpacity() const override;
     double getRefractiveIndex() const override;
     double getReflectivity() const override;
 };
 ```
 
-Usage dans le parser :
+Usage in the parser:
 
 ```cpp
-// Une sphère avec translation + rotation
+// A sphere with translation + rotation
 IPrimitive* sphere = factory.create("sphere", params);
 Matrix4x4 mat = Matrix4x4::translation({10, 0, 0}) * Matrix4x4::rotationY(45);
 IPrimitive* transformed = new Transform(sphere, mat);
@@ -303,7 +301,7 @@ IPrimitive* transformed = new Transform(sphere, mat);
 
 ---
 
-## Design Pattern : Builder — `SceneBuilder`
+## Design Pattern: Builder — `SceneBuilder`
 
 ```cpp
 class SceneBuilder {
@@ -315,31 +313,31 @@ private:
 public:
     SceneBuilder& setCamera(const Camera& camera);
 
-    // Accepte déjà une primitive potentiellement wrappée dans un Transform.
+    // Accepts a primitive that may already be wrapped in a Transform.
     SceneBuilder& addPrimitive(IPrimitive* primitive);
     SceneBuilder& addLight(ILight* light);
 
-    // Vérifie que la caméra est définie, lève une exception sinon.
-    // Enveloppe toutes les primitives dans un PrimitiveList (Composite).
+    // Checks that the camera is set, throws otherwise.
+    // Wraps all primitives in a PrimitiveList (Composite).
     Scene build() const;
 };
 ```
 
 ---
 
-## Design Pattern : Factory — `PrimitiveFactory` / `LightFactory`
+## Design Pattern: Factory — `PrimitiveFactory` / `LightFactory`
 
-Charge les plugins `.so` via `dlopen`, met les handles en cache.
+Loads `.so` plugins via `dlopen` and caches the handles.
 
 ```cpp
 class PrimitiveFactory {
 public:
-    // Charge ./plugins/raytracer_{type}.so si pas encore en cache.
-    // Appelle createPrimitive(params) depuis le .so.
+    // Loads ./plugins/raytracer_{type}.so if not cached yet.
+    // Calls createPrimitive(params) from the .so.
     IPrimitive* create(const std::string& type,
                        const std::map<std::string, double>& params);
 
-    ~PrimitiveFactory(); // appelle dlclose sur tous les handles
+    ~PrimitiveFactory(); // calls dlclose on all handles
 
 private:
     std::map<std::string, void*> _handles;
@@ -359,11 +357,11 @@ private:
 
 ---
 
-## Design Pattern : Composite — `PrimitiveList`
+## Design Pattern: Composite — `PrimitiveList`
 
-Le Renderer appelle `hits()` sur un seul objet et obtient l'intersection la plus proche parmi tous
-les objets de la scène. Essentiel aussi pour les ombres portées : `ILight` reçoit la scène entière
-sous forme d'`IPrimitive&` (qui est en réalité ce `PrimitiveList`).
+The Renderer calls `hits()` on a single object and gets the closest intersection among all
+objects in the scene. Also essential for drop shadows: `ILight` receives the whole scene as an
+`IPrimitive&` (which is actually this `PrimitiveList`).
 
 ```cpp
 class PrimitiveList : public IPrimitive {
@@ -373,60 +371,60 @@ private:
 public:
     void add(IPrimitive* primitive);
 
-    // Retourne le t le plus petit parmi tous les enfants (objet le plus proche).
+    // Returns the smallest t among all children (closest object).
     std::optional<double> hits(const Ray& ray) const override;
 
-    // Retourne la normale de l'enfant le plus proche au point donné.
+    // Returns the normal of the closest child at the given point.
     Vector3D getNormal(const Point3D& point) const override;
 
-    // Retourne la couleur de l'enfant le plus proche.
+    // Returns the color of the closest child.
     Color getColor(const Point3D& point) const override;
 
-    // Implémentation par défaut pour satisfaire l'interface pure
+    // Default implementation to satisfy the pure interface
     double getOpacity() const override;
     double getRefractiveIndex() const override;
     double getReflectivity() const override;
 
-    // Accès à l'enfant touché (utile pour récupérer couleur + normale dans le Renderer).
+    // Access to the hit child (useful to fetch color + normal in the Renderer).
     const IPrimitive* getClosest(const Ray& ray) const;
 
-    ~PrimitiveList(); // libère les enfants
+    ~PrimitiveList(); // frees the children
 };
 ```
 
 ---
 
-## Couche Camera
+## Camera layer
 
 ```cpp
 class Camera {
 public:
     Point3D  position;
-    Vector3D rotation; // angles en degrés (x, y, z)
+    Vector3D rotation; // angles in degrees (x, y, z)
     int      width;
     int      height;
-    double   fov;      // en degrés
+    double   fov;      // in degrees
 
-    // 1. Constructeur par défaut
+    // 1. Default constructor
     Camera();
 
-    // 2. Constructeur de recopie
+    // 2. Copy constructor
     Camera(const Camera& other);
 
-    // 3. Opérateur d'affectation
+    // 3. Assignment operator
     Camera& operator=(const Camera& other);
 
-    // 4. Destructeur
+    // 4. Destructor
     ~Camera();
     Camera(const Point3D& position, const Vector3D& rotation,
            int width, int height, double fov);
 
-    // Construit le Rectangle3D du plan image.
-    // Place le plan à distance 1 devant la caméra.
-    // bottom_side et left_side sont calculés depuis le FOV et le ratio.
+    // Builds the Rectangle3D of the image plane.
+    // Places the plane at distance 1 in front of the camera.
+    // bottom_side and left_side are computed from the FOV and aspect ratio.
     Rectangle3D getScreen() const;
 
-    // Génère le rayon pour le pixel (px, py).
+    // Generates the ray for pixel (px, py).
     // u = px / (width-1), v = py / (height-1)
     // direction = screen.pointAt(u, v) - position
     Ray getRayForPixel(int px, int py) const;
@@ -435,18 +433,18 @@ public:
 
 ---
 
-## Couche Scene
+## Scene layer
 
 ```cpp
 class Scene {
 public:
     Camera        camera;
-    PrimitiveList primitives; // Composite : agit comme une seule IPrimitive
+    PrimitiveList primitives; // Composite: acts as a single IPrimitive
     std::vector<ILight*> lights;
 
     Scene(const Camera& camera);
 
-    void addPrimitive(IPrimitive* primitive); // délègue à primitives.add()
+    void addPrimitive(IPrimitive* primitive); // delegates to primitives.add()
     void addLight(ILight* light);
 
     ~Scene();
@@ -455,9 +453,9 @@ public:
 
 ---
 
-## Primitives concrètes (plugins)
+## Concrete primitives (plugins)
 
-Chaque plugin exporte obligatoirement :
+Each plugin must export:
 
 ```cpp
 extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& params);
@@ -476,8 +474,8 @@ private:
 public:
     Sphere(const Point3D& center, double radius, const Color& color);
 
-    // Résout ||O + t*D - C||² = r²  →  at² + bt + c = 0
-    // Retourne le t positif le plus petit, ou nullopt.
+    // Solves ||O + t*D - C||² = r²  →  at² + bt + c = 0
+    // Returns the smallest positive t, or nullopt.
     std::optional<double> hits(const Ray& ray) const override;
 
     // (point - center).normalize()
@@ -492,7 +490,7 @@ public:
 ```cpp
 class Plane : public IPrimitive {
 private:
-    char   _axis;     // 'X', 'Y' ou 'Z'
+    char   _axis;     // 'X', 'Y' or 'Z'
     double _position;
     Color  _color;
 
@@ -500,26 +498,26 @@ public:
     Plane(char axis, double position, const Color& color);
 
     // t = (position - origin[axis]) / direction[axis]
-    // nullopt si direction[axis] ≈ 0 (rayon parallèle au plan).
+    // nullopt if direction[axis] ≈ 0 (ray parallel to the plane).
     std::optional<double> hits(const Ray& ray) const override;
 
-    // Vecteur unitaire de l'axe : (1,0,0) pour X, (0,1,0) pour Y, (0,0,1) pour Z.
+    // Unit axis vector: (1,0,0) for X, (0,1,0) for Y, (0,0,1) for Z.
     Vector3D getNormal(const Point3D& point) const override;
 
     Color getColor(const Point3D& point) const override;
 };
 ```
 
-### `Cylinder` (should) — `plugins/raytracer_cylinder.so`
+### `Cylinder` — `plugins/raytracer_cylinder.so`
 
-Ajouté plus tard sans modifier aucune classe existante.
+Added later without modifying any existing class.
 
 ```cpp
 class Cylinder : public IPrimitive {
 private:
     Point3D  _center;
     double   _radius;
-    double   _height; // pour le cylindre limité (could)
+    double   _height; // for the limited cylinder
     Color    _color;
 
 public:
@@ -531,7 +529,7 @@ public:
 
 ---
 
-## Lumières concrètes (plugins)
+## Concrete lights (plugins)
 
 ```cpp
 extern "C" ILight* createLight(const std::map<std::string, double>& params);
@@ -547,7 +545,7 @@ private:
     Color  _color;
 
 public:
-    // Retourne toujours intensity * color, jamais d'ombre.
+    // Always returns intensity * color, never shadowed.
     Color computeContribution(const HitInfo& hit,
                               const IPrimitive& scene) const override;
 };
@@ -558,15 +556,15 @@ public:
 ```cpp
 class DirectionalLight : public ILight {
 private:
-    Vector3D _direction; // normalisée, direction d'où vient la lumière
+    Vector3D _direction; // normalized, direction the light comes from
     double   _intensity;
     Color    _color;
 
 public:
     // 1. dot = max(0, normal · (-direction))
-    // 2. Drop shadows (should) : envoie un rayon depuis point vers -direction,
-    //    si scene.hits(shadowRay) a un résultat → retourne Color(0,0,0)
-    // 3. Retourne color * intensity * dot
+    // 2. Drop shadows: cast a ray from point towards -direction,
+    //    if scene.hits(shadowRay) returns a result → return Color(0,0,0)
+    // 3. Return color * intensity * dot
     Color computeContribution(const HitInfo& hit,
                               const IPrimitive& scene) const override;
 };
@@ -576,34 +574,34 @@ public:
 
 ## Renderer
 
-Stateless et récursif dès le départ.
+Stateless and recursive from the start.
 
 ```cpp
 class Renderer {
 private:
     const Scene& _scene;
-    int          _maxDepth; // 0 = rendu plat, 5 = reflets/réfractions actifs
+    int          _maxDepth; // 0 = flat render, 5 = reflections/refractions enabled
 
 public:
     Renderer(const Scene& scene, int maxDepth = 0);
 
-    // Lance le rendu complet. Retourne un buffer 2D de couleurs.
-    // Stateless : peut être parallélisé par bandes de pixels (multithreading).
+    // Runs the full render. Returns a 2D color buffer.
+    // Stateless: can be parallelized by pixel bands (multithreading).
     std::vector<std::vector<Color>> render() const;
 
 private:
-    // Calcule la couleur pour un rayon donné.
-    // depth >= _maxDepth → retourne la couleur de fond (noir).
+    // Computes the color for a given ray.
+    // depth >= _maxDepth → returns the background color (black).
     Color computeColor(const Ray& ray, int depth = 0) const;
 
-    // Additionne la contribution de toutes les lumières au point touché.
+    // Sums the contribution of all lights at the hit point.
     Color computeDirectLighting(const IPrimitive& primitive,
                                 const HitInfo& info) const;
 
-    // Pour les reflets (could) : génère le rayon réfléchi et rappelle computeColor(depth+1).
+    // Reflections: builds the reflected ray and calls computeColor(depth+1).
     Color computeReflection(const HitInfo& info, int depth) const;
 
-    // Pour la réfraction (could) : génère le rayon réfracté et rappelle computeColor(depth+1).
+    // Refraction: builds the refracted ray and calls computeColor(depth+1).
     Color computeRefraction(const HitInfo& info, int depth) const;
 };
 ```
@@ -619,7 +617,7 @@ private:
     LightFactory     _lightFactory;
 
 public:
-    // Lit le .cfg, construit la scène via SceneBuilder.
+    // Reads the .cfg and builds the scene via SceneBuilder.
     Scene parse(const std::string& filepath);
 
 private:
@@ -627,8 +625,8 @@ private:
     IPrimitive* parsePrimitive(const libconfig::Setting& cfg);
     ILight*     parseLight(const libconfig::Setting& cfg);
 
-    // Construit la matrice de transformation depuis les champs
-    // translate/rotate/scale du .cfg, puis wrappe la primitive dans un Transform.
+    // Builds the transformation matrix from the translate/rotate/scale
+    // fields of the .cfg, then wraps the primitive in a Transform.
     IPrimitive* applyTransforms(IPrimitive* primitive,
                                 const libconfig::Setting& cfg);
 };
@@ -641,9 +639,9 @@ private:
 ```cpp
 class PPMWriter {
 public:
-    // Format PPM P3 (ASCII).
-    // En-tête : "P3\nwidth height\n255\n"
-    // Ensuite : "r g b " par pixel, ligne par ligne.
+    // PPM P3 format (ASCII).
+    // Header: "P3\nwidth height\n255\n"
+    // Then: "r g b " per pixel, row by row.
     static void write(const std::string& filepath,
                       const std::vector<std::vector<Color>>& pixels);
 };
@@ -651,7 +649,7 @@ public:
 
 ---
 
-## Relations entre les classes
+## Class relationships
 
 ```
 main
@@ -671,30 +669,30 @@ Scene
        │     ├── computeDirectLighting()
        │     │     └── ILight.computeContribution(hit, scene)
        │     │           └── shadowRay → PrimitiveList.hits()  (drop shadows)
-       │     ├── computeReflection()   [depth > 0, could]
-       │     └── computeRefraction()  [depth > 0, could]
+       │     ├── computeReflection()   [depth > 0]
+       │     └── computeRefraction()  [depth > 0]
        └─► PPMWriter.write()
 ```
 
 ---
 
-## Extensibilité vers les should / could
+## Extensibility
 
-| Fonctionnalité | Ce qu'il faut faire | Ce qui ne change pas |
+| Feature | What to do | What does not change |
 |---|---|---|
-| Cylinder, Cone (should) | Nouveau plugin `.so` | IPrimitive, Renderer, Scene |
-| Rotation (should) | Transform + Matrix4x4 existent déjà | IPrimitive, primitives concrètes |
-| Drop shadows (should) | DirectionalLight envoie shadowRay via `scene` | ILight signature déjà prévue |
-| Phong (could) | Utilise `viewDir` déjà dans HitInfo | ILight signature déjà prévue |
-| Reflection / Refraction (could) | `computeReflection/Refraction()` dans Renderer, extension de `IPrimitive` avec `getOpacity`, `getRefractiveIndex`, `getReflectivity` | Architecture globale (via Decorator Transform) |
-| Multithreading (could) | Renderer stateless → paralléliser `render()` par bandes | Tout le reste |
-| Textures (could) | `getColor(point)` reçoit déjà le point | IPrimitive signature déjà prévue |
-| Scale (could) | Matrix4x4 supporte déjà scale | Transform existe déjà |
-| Multiple point lights (could) | Nouveau plugin `PointLight.so` | ILight, Renderer |
+| Cylinder, Cone | New `.so` plugin | IPrimitive, Renderer, Scene |
+| Rotation | Transform + Matrix4x4 already exist | IPrimitive, concrete primitives |
+| Drop shadows | DirectionalLight casts shadowRay via `scene` | ILight signature already planned |
+| Phong | Uses `viewDir` already in HitInfo | ILight signature already planned |
+| Reflection / Refraction | `computeReflection/Refraction()` in Renderer, `IPrimitive` extended with `getOpacity`, `getRefractiveIndex`, `getReflectivity` | Overall architecture (via the Transform Decorator) |
+| Multithreading | Stateless Renderer → parallelize `render()` by bands | Everything else |
+| Textures | `getColor(point)` already receives the point | IPrimitive signature already planned |
+| Scale | Matrix4x4 already supports scale | Transform already exists |
+| Multiple point lights | New `PointLight.so` plugin | ILight, Renderer |
 
 ---
 
-## Structure des fichiers
+## File layout
 
 ```
 raytracer/
@@ -729,27 +727,27 @@ raytracer/
 └── plugins/
     ├── sphere/        Sphere.cpp           →  raytracer_sphere.so
     ├── plane/         Plane.cpp            →  raytracer_plane.so
-    ├── cylinder/      Cylinder.cpp         →  raytracer_cylinder.so   (should)
-    ├── cone/          Cone.cpp             →  raytracer_cone.so       (should)
+    ├── cylinder/      Cylinder.cpp         →  raytracer_cylinder.so
+    ├── cone/          Cone.cpp             →  raytracer_cone.so
     ├── ambient/       AmbientLight.cpp     →  raytracer_ambient.so
     └── directional/   DirectionalLight.cpp →  raytracer_directional.so
 ```
 
 ---
 
-## Ordre d'implémentation recommandé
+## Recommended implementation order
 
-1. `Point3D`, `Vector3D`, `Color` — aucune dépendance
-2. `Ray`, `Rectangle3D`, `Matrix4x4` — dépendent de Vector3D/Point3D
-3. `IPrimitive`, `ILight`, `HitInfo` — les contrats à poser avant tout
-4. `Sphere` + `Plane` (plugins) — premières intersections testables
-5. `Camera` + `Rectangle3D::pointAt` — génération des rayons
+1. `Point3D`, `Vector3D`, `Color` — no dependencies
+2. `Ray`, `Rectangle3D`, `Matrix4x4` — depend on Vector3D/Point3D
+3. `IPrimitive`, `ILight`, `HitInfo` — the contracts to set first
+4. `Sphere` + `Plane` (plugins) — first testable intersections
+5. `Camera` + `Rectangle3D::pointAt` — ray generation
 6. `PrimitiveList` (Composite) + `Transform` (Decorator)
 7. `AmbientLight` + `DirectionalLight` (plugins)
 8. `SceneBuilder` (Builder) + `PrimitiveFactory` + `LightFactory`
 9. `SceneParser` (libconfig++)
-10. `Renderer` (depth=0 d'abord) + `PPMWriter`
-11. Test minimal : une sphère, une lumière ambiante, sortie PPM
-12. Drop shadows : activer shadowRay dans `DirectionalLight::computeContribution`
-13. Cylinder, Cone : nouveaux plugins, rien d'autre à toucher
-14. Reflection/Refraction : passer `_maxDepth > 0` au Renderer
+10. `Renderer` (depth=0 first) + `PPMWriter`
+11. Minimal test: one sphere, one ambient light, PPM output
+12. Drop shadows: enable shadowRay in `DirectionalLight::computeContribution`
+13. Cylinder, Cone: new plugins, nothing else to touch
+14. Reflection/Refraction: pass `_maxDepth > 0` to the Renderer

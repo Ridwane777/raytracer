@@ -1,59 +1,71 @@
 # RayTracer
 
-Moteur de rendu 3D par lancer de rayons (Raytracing) développé en C++20. Ce projet génère des images au format `.ppm` à partir de fichiers de configuration de scènes via un système de plugins dynamiques (`.so`).
+[![Build](https://github.com/Ridwane777/raytracer/actions/workflows/build.yml/badge.svg)](https://github.com/Ridwane777/raytracer/actions/workflows/build.yml)
 
-## Architecture & Design Patterns
+A C++20 ray tracer that renders scene files to `.ppm` images, with primitives and lights loaded as dynamic `.so` plugins.
 
-Ce projet respecte les principes SOLID et utilise plusieurs Design Patterns incontournables :
+<table>
+  <tr>
+    <td><img src="screenshots/08_showcase.png" alt="Showcase" width="300"></td>
+    <td><img src="screenshots/01_cornell_box.png" alt="Cornell box" width="300"></td>
+    <td><img src="screenshots/03_crystal_ball.png" alt="Crystal ball" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/07_solar_system.png" alt="Solar system" width="300"></td>
+    <td><img src="screenshots/03_torus_knot.png" alt="Torus knot" width="300"></td>
+    <td><img src="screenshots/06_temple.png" alt="Temple" width="300"></td>
+  </tr>
+</table>
 
-- **Factory Pattern** (`PrimitiveFactory`, `LightFactory`) : Permet le chargement dynamique des plugins `.so`. Le cœur du programme n'a aucune connaissance des primitives ou lumières existantes.
-- **Decorator Pattern** (`Transform`) : Utilisé pour les transformations spatiales. Au lieu de coder les positions en dur, chaque primitive est créée à l'origine (0,0,0) puis enveloppée dans un `Transform` qui applique une matrice de transformation 4x4.
-- **Composite Pattern** (`PrimitiveList`) : Gère une collection d'objets `IPrimitive` comme un objet unique, permettant de lancer un rayon dans la scène entière en un seul appel de méthode `hits()`.
-- **Builder Pattern** (`SceneBuilder`) : Construit l'objet `Scene` final étape par étape à partir des données extraites par le `SceneParser`.
+## Architecture & design patterns
 
----
+The engine follows SOLID principles and relies on four design patterns:
 
-## Fonctionnalités
+- **Factory** (`PrimitiveFactory`, `LightFactory`): loads `.so` plugins at runtime. The core has no knowledge of which primitives or lights exist.
+- **Decorator** (`Transform`): handles spatial transformations. Each primitive is created at the origin (0,0,0) and wrapped in a `Transform` that applies a 4x4 transformation matrix.
+- **Composite** (`PrimitiveList`): treats a collection of `IPrimitive` objects as a single one, so a ray is cast against the whole scene with one `hits()` call.
+- **Builder** (`SceneBuilder`): builds the final `Scene` step by step from the data extracted by `SceneParser`.
 
-L'implémentation actuelle couvre toutes les exigences principales ainsi que de nombreux bonus mathématiques et architecturaux.
+## Features
 
-### ✅ MUST (Fonctionnalités de base)
-- **Primitives** : Sphere, Plane (via plugins dynamiques)
-- **Transformations** : Translation
-- **Light** : Directional light, Ambient light
-- **Material** : Flat color (Calcul des couleurs en RGB)
-- **Interface** : Configuration des scènes via fichier texte (libconfig)
-- **Output** : Sauvegarde au format image `.ppm` (P3)
-- **Robustesse** : Gestion des erreurs sur la sortie standard d'erreur (`stderr`), usage `--help`.
+### Primitives
+- Sphere, plane, cylinder, cone (dynamic plugins)
+- Triangle (`triangle.so`), using plane-polygon intersection
+- Torus (`torus.so`), solved analytically as a quartic equation
+- Wavefront `.obj` models, triangulated on the fly
 
-### ✅ SHOULD (Fonctionnalités intermédiaires)
-- **Primitives** : Cylinder, Cone (via plugins)
-- **Transformations : Rotations** : L'algèbre complète de rotation (`rotationX`, `Y`, `Z`) est mathématiquement implémentée et prête à l'emploi via le fichier de configuration.
-- **Light** : Drop shadows (Ombres portées réalistes via "Shadow Rays").
+### Transformations
+- Translation, rotation (`rotationX`, `Y`, `Z`), scale and shear
+- Combined and inverted 4x4 matrices, applicable to any primitive without changing its code
 
-### 🏆 COULD (Bonus & Fonctionnalités Avancées)
-- **Primitives : Triangle** : Support des polygones plats à trois sommets (plugin dynamique `triangle.so`) utilisant l'intersection plan-polygone.
-- **Primitives : Torus** : Support de la primitive complexe de tore (plugin dynamique `torus.so`) par résolution analytique d'une équation polynomiale du 4ème degré.
-- **Primitives : .OBJ file** : Chargement de fichiers de modèles 3D complexes au format Wavefront `.obj` avec triangulation automatique à la volée.
-- **Transformations : Transformation Matrix** : Le système utilise de véritables matrices 4x4 combinées et inversées pour gérer de façon transparente toutes les opérations de positionnement (Pattern Decorator).
-- **Transformations : Scale & Shear** : Déformation d'échelle et cisaillement (shear) implémentés directement dans le moteur matriciel, applicables à n'importe quelle primitive sans retoucher son code.
-- **Light : Multiple lights** : L'architecture supporte une liste illimitée de sources lumineuses (ambiance, directionnelles, ponctuelles) additionnant leurs contributions.
-- **Light : Point light** : Plugin de lumière ponctuelle (`plugins/point/PointLight`), agissant comme une ampoule locale gérant la décroissance lumineuse et les ombres multiples.
-- **Light : Colored light** : Support spectral complet (RGB). La couleur finale est le produit du spectre de l'objet et de celui de la lumière qui l'éclaire.
-- **Material : Transparency** : L'opacité des objets permet le passage du rayon au travers des primitives (mélange Alpha Blending).
-- **Material : Refraction** : Implémentation physique complète de la Loi de Snell-Descartes avec indices de réfraction et gestion de la réflexion totale interne (ex: verre, eau).
-- **Material : Reflection** : Effet miroir parfait avec limitation de rebonds via `_maxDepth` dans le moteur récursif.
-- **Render : Antialiasing (Supersampling)** : Lissage des bords par lancer de plusieurs rayons par pixel avec décalages sub-pixels aléatoires.
-- **Light : Phong reflection model** : Modèle d'illumination complet incluant les composantes ambiante, diffuse et spéculaire.
+### Lighting
+- Ambient, directional and point lights (`plugins/point/PointLight`, with falloff)
+- Unlimited number of lights, contributions summed
+- Colored (RGB) lights: final color is the product of object and light colors
+- Drop shadows via shadow rays
+- Phong reflection model (ambient, diffuse, specular)
 
----
+### Materials
+- Flat RGB color
+- Transparency (alpha blending)
+- Refraction (Snell's law, refractive indices, total internal reflection)
+- Reflection (mirror), with bounce depth limited by `_maxDepth`
 
-## Compilation & Utilisation
+### Rendering
+- Antialiasing by supersampling with random sub-pixel offsets
+- Recursive rendering engine
 
-### Prérequis
-- Compilateur compatible `C++20`
+### Display & interface
+- Scenes configured through text files (libconfig)
+- Output as `.ppm` (P3) images
+- Errors reported on `stderr`, `--help` usage
+
+## Build & usage
+
+### Requirements
+- A `C++20` compiler
 - `cmake` (>= 3.17)
-- `libconfig++` (`sudo dnf install libconfig-c++-devel` ou `sudo apt install libconfig++-dev`)
+- `libconfig++` (`sudo dnf install libconfig-c++-devel` or `sudo apt install libconfig++-dev`)
 
 ### Build
 
@@ -62,10 +74,27 @@ cmake -B build -S .
 cmake --build build
 ```
 
-### Lancement
+### Run
 
 ```bash
-# Générer le rendu de la scène de test
-./raytracer scenes/test.cfg
+# Render the test scene
+./raytracer scenes/simple_scene.cfg
 ```
-L'image résultante sera sauvegardée sous le nom `output.ppm`.
+
+The image is saved as `output.ppm`.
+
+## Scene files
+
+Scenes are libconfig text files. See the files in `scenes/` for examples.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Transformations](docs/transformations.md)
+- [Math formulas](docs/formulas.md)
+- [Camera and math fixes](docs/camera-math-fixes.md)
+- [Bug fixes](docs/bug-fixes.md)
+
+## Author
+
+Ridwane777

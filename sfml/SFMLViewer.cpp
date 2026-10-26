@@ -159,7 +159,7 @@ SFMLViewer::SFMLViewer(Scene scene, Config cfg)
     float scaleY = (float)cfg.windowHeight / cfg.renderHeight;
     _sprite.setScale(scaleX, scaleY);
 
-    // Police système
+    // System font
     if (!_font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf") &&
         !_font.loadFromFile("/System/Library/Fonts/Menlo.ttc") &&
         !_font.loadFromFile("C:/Windows/Fonts/consola.ttf"))

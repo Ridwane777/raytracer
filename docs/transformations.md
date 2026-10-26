@@ -1,51 +1,51 @@
-# Transformations — Design Pattern Decorator et Matrices 4x4
+# Transformations: Decorator Pattern and 4x4 Matrices
 
-## Le problème de l'approche naïve
+## The problem with the naive approach
 
-### Qu'est-ce que "translater" un objet dans un raytracer ?
+### What does "translating" an object mean in a raytracer?
 
-Translater = déplacer un objet d'un point A vers un point B dans la scène.
+Translating means moving an object from point A to point B in the scene.
 
-Dans un raytracer naïf, on traduit ça par : *"on code la position de l'objet directement dans ses données"*.
+A naive raytracer does this by *hardcoding the object's position in its own data*.
 
-C'est ce que le code faisait **avant** le refactoring. Par exemple pour la sphère :
+That is what the code did **before** the refactoring. For the sphere, for example:
 
 ```cpp
-// SceneBuilder envoyait ça au plugin Sphere :
-params["x"] = 60.0;  // ← la position est codée dans la sphère elle-même
+// SceneBuilder sent this to the Sphere plugin:
+params["x"] = 60.0;  // ← the position is stored in the sphere itself
 params["y"] = 5.0;
 params["z"] = 40.0;
 
-// Et dans Sphere.cpp, hits() faisait :
+// And in Sphere.cpp, hits() did:
 double dx = ray.origin.X - _center.X;  // _center = (60, 5, 40)
 double dy = ray.origin.Y - _center.Y;
 double dz = ray.origin.Z - _center.Z;
 ```
 
-Visuellement, ça marchait. Mais **architecturalement**, c'est une impasse.
+Visually it worked. **Architecturally**, it was a dead end.
 
-### Pourquoi c'est une mauvaise pratique ?
+### Why is it bad practice?
 
-**Raison 1 — Ce n'est pas une "transformation" au sens mathématique**
+**Reason 1: it is not a "transformation" in the mathematical sense**
 
-Le sujet exige des *transformations* (translation, rotation, scale...). Une transformation est une opération mathématique appliquée à un objet indépendant de celui-ci. Mais là, la sphère "sait" qu'elle est à (60, 5, 40). Elle n'a pas été *transformée*, elle a été *construite* à cet endroit. La nuance est fondamentale en architecture logicielle.
+The goal is real *transformations* (translation, rotation, scale...). A transformation is a mathematical operation applied to an object, independent of it. Here the sphere "knows" it is at (60, 5, 40). It was not *transformed*, it was *built* there. The distinction matters in software architecture.
 
-**Raison 2 — Pas extensible**
+**Reason 2: not extensible**
 
-Si on veut appliquer une **rotation** à une sphère, il faut modifier le code de la Sphère. Et du Cylindre. Et du Cône. Chaque primitive doit réimplémenter la même logique de transformation. C'est une violation du principe **DRY** (*Don't Repeat Yourself*) et du principe **Open/Closed**.
+To rotate a sphere, the Sphere code would have to change. And the Cylinder. And the Cone. Every primitive would reimplement the same transformation logic, violating **DRY** (*Don't Repeat Yourself*) and the **Open/Closed** principle.
 
 ---
 
-## La solution : Design Pattern Decorator + Matrices 4x4
+## The solution: Decorator pattern + 4x4 matrices
 
-### Le principe du Decorator
+### The Decorator principle
 
-Au lieu de modifier la primitive, on l'**enveloppe** dans un objet intermédiaire qui gère la transformation. C'est le **Design Pattern Decorator** :
+Instead of modifying the primitive, we **wrap** it in an intermediate object that handles the transformation. This is the **Decorator pattern**:
 
-- `Transform` implémente la même interface `IPrimitive` que la Sphère
-- Il possède une référence vers la primitive interne (la vraie Sphère)
-- Quand on appelle `Transform::hits()`, il transforme d'abord le rayon, puis délègue à `Sphere::hits()`
-- La Sphère ne sait pas qu'elle est dans un Transform
+- `Transform` implements the same `IPrimitive` interface as the Sphere
+- It holds a reference to the inner primitive (the actual Sphere)
+- `Transform::hits()` first transforms the ray, then delegates to `Sphere::hits()`
+- The Sphere does not know it is inside a Transform
 
 ```
 Scene
@@ -54,11 +54,11 @@ Scene
         └── Sphere(center=(0,0,0), r=25)   (IPrimitive)
 ```
 
-### Pourquoi des matrices 4x4 ?
+### Why 4x4 matrices?
 
-En 3D, toutes les transformations géométriques (translation, rotation, échelle) peuvent être représentées par des **matrices 4x4**. On a besoin de 4 dimensions (et non 3) pour pouvoir exprimer la translation sous forme de multiplication matricielle.
+In 3D, all geometric transformations (translation, rotation, scale) can be represented as **4x4 matrices**. The 4th dimension is needed to express translation as a matrix multiplication.
 
-La matrice de translation par le vecteur `(tx, ty, tz)` :
+The translation matrix for vector `(tx, ty, tz)`:
 
 ```
 T = [1  0  0  tx]
@@ -67,34 +67,34 @@ T = [1  0  0  tx]
     [0  0  0   1]
 ```
 
-L'avantage majeur : on peut **combiner** des transformations en **multipliant** leurs matrices.
-Pour "translater de (5,0,0) puis pivoter de 45° autour de Y" :
+The main benefit: transformations **combine** by **multiplying** their matrices.
+To "translate by (5,0,0) then rotate 45° around Y":
 
 ```cpp
 Matrix4x4 M = Matrix4x4::rotationY(45.0) * Matrix4x4::translation(Vector3D(5, 0, 0));
 ```
 
-Et on obtient une seule matrice qui fait les deux opérations en un seul appel.
+The result is a single matrix that performs both operations in one call.
 
-### Comment ça fonctionne à l'exécution
+### How it works at runtime
 
-L'astuce du Transform : au lieu de **déplacer l'objet**, on **déplace le rayon dans le sens inverse**.
+The Transform trick: instead of **moving the object**, we **move the ray the opposite way**.
 
-Si la sphère est translatée de `(60, 5, 40)` en monde, on transforme le rayon avec la matrice **inverse** `(-60, -5, -40)` pour ramener le rayon dans l'espace local où la sphère est à l'origine :
+If the sphere is translated by `(60, 5, 40)` in world space, the ray is transformed by the **inverse** matrix `(-60, -5, -40)` to bring it into local space, where the sphere sits at the origin:
 
 ```
-Rayon monde  →  [Transform : applique l'inverse]  →  Rayon local  →  Sphere.hits()
-                    (translation de -60, -5, -40)       ↑
-                                                  Sphère à (0,0,0)
+World ray  →  [Transform: applies the inverse]  →  Local ray  →  Sphere.hits()
+                    (translation by -60, -5, -40)       ↑
+                                                  Sphere at (0,0,0)
 ```
 
-La normale calculée dans l'espace local est ensuite retransformée vers l'espace monde via la **transposée de l'inverse** de la matrice (formule mathématique standard pour les normales).
+The normal computed in local space is then transformed back to world space with the **transpose of the inverse** of the matrix (the standard formula for normals).
 
 ```cpp
-// Dans Transform.cpp
+// In Transform.cpp
 std::optional<double> Transform::hits(const Ray& ray) const {
-    Ray localRay = _worldToLocal.transformRay(ray);   // rayon → espace local
-    return _wrapped->hits(localRay);                  // délègue à la primitive
+    Ray localRay = _worldToLocal.transformRay(ray);   // ray → local space
+    return _wrapped->hits(localRay);                  // delegate to the primitive
 }
 
 Vector3D Transform::getNormal(const Point3D& point) const {
@@ -103,8 +103,8 @@ Vector3D Transform::getNormal(const Point3D& point) const {
     return _worldToLocal.transpose().transformVector(localNormal).normalize();
 }
 
-// Nouveauté pour les matériaux (Transparence / Réfraction / Réflexion) :
-// Le Transform propage ces requêtes à l'objet interne sans les altérer.
+// New for materials (transparency / refraction / reflection):
+// Transform forwards these queries to the inner object unchanged.
 double Transform::getOpacity() const { return _wrapped->getOpacity(); }
 double Transform::getRefractiveIndex() const { return _wrapped->getRefractiveIndex(); }
 double Transform::getReflectivity() const { return _wrapped->getReflectivity(); }
@@ -112,52 +112,52 @@ double Transform::getReflectivity() const { return _wrapped->getReflectivity(); 
 
 ---
 
-## Ce qui a été changé dans le code
+## What changed in the code
 
 ### `Transform.hpp` / `Transform.cpp`
 
-La classe existait déjà mais prenait un `IPrimitive*` (raw pointer = fuite mémoire potentielle si le plugin `.so` se décharge avant la primitive).
+The class already existed but took an `IPrimitive*` (raw pointer = potential leak or dangling pointer if the `.so` plugin is unloaded before the primitive).
 
 ```cpp
-// AVANT — raw pointer dangereux
+// BEFORE: dangerous raw pointer
 Transform(IPrimitive* primitive, const Matrix4x4& transform);
 IPrimitive* _wrapped;
 
-// APRÈS — shared_ptr = propriété partagée, pas de fuite
+// AFTER: shared_ptr = shared ownership, no leak
 Transform(std::shared_ptr<IPrimitive> primitive, const Matrix4x4& transform);
 std::shared_ptr<IPrimitive> _wrapped;
 ```
 
-Le `shared_ptr` garantit que la primitive encapsulée reste en vie aussi longtemps que le Transform existe, même si la factory l'a libéré par ailleurs.
+The `shared_ptr` keeps the wrapped primitive alive as long as the Transform exists, even if the factory released it elsewhere.
 
 ### `SceneBuilder.cpp`
 
-C'est là que se passe le changement principal. Pour chaque primitive, on suit maintenant ce protocole en deux étapes :
+This is where the main change happens. Each primitive now follows a two-step protocol:
 
 ```cpp
-// AVANT : la Sphère connaît sa position finale
+// BEFORE: the Sphere knows its final position
 params["x"] = 60.0;
 params["y"] = 5.0;
 params["z"] = 40.0;
 auto sphere = factory.create("sphere", params);
 scene.addPrimitive(sphere);
 
-// APRÈS : la Sphère est à l'origine, Transform s'occupe du déplacement
-params["x"] = 0.0;    // ← toujours à l'origine
+// AFTER: the Sphere is at the origin, Transform handles the move
+params["x"] = 0.0;    // ← always at the origin
 params["y"] = 0.0;
 params["z"] = 0.0;
 auto base = factory.create("sphere", params);
 
-// On utilise buildTransformMatrix pour combiner translation, rotation, scale, et shear
+// buildTransformMatrix combines translation, rotation, scale and shear
 Matrix4x4 tr = buildTransformMatrix(cfg, 60.0, 5.0, 40.0);
 auto translated = std::make_shared<Transform>(base, tr);
-scene.addPrimitive(translated);  // on ajoute le Transform, pas la Sphère directement
+scene.addPrimitive(translated);  // add the Transform, not the Sphere directly
 ```
 
-**Pour le plan**, le raisonnement est légèrement différent car un plan est défini par un axe et une position sur cet axe. On le crée à `position = 0` puis on translate uniquement le long de son axe :
+**For the plane**, the reasoning differs slightly because a plane is defined by an axis and a position on that axis. It is created at `position = 0` and then translated only along its axis:
 
 ```cpp
-// Plan Y à position = -3 → translate de (0, -3, 0)
+// Y plane at position = -3 → translate by (0, -3, 0)
 double ty = (axisVal == 1.0) ? cfg.position : 0.0;
 Matrix4x4 tr = buildTransformMatrix(cfg, 0.0, ty, 0.0);
 auto translated = std::make_shared<Transform>(basePlane, tr);
@@ -165,17 +165,17 @@ auto translated = std::make_shared<Transform>(basePlane, tr);
 
 ---
 
-## Design patterns utilisés
+## Design patterns used
 
-| Pattern | Où | Rôle |
+| Pattern | Where | Role |
 |---|---|---|
-| **Decorator** | `Transform` wrappant `IPrimitive` | Ajoute une transformation sans modifier la classe enveloppée |
-| **Factory** | `PrimitiveFactory`, `LightFactory` | Instancie les plugins depuis les `.so` sans connaître les classes concrètes |
-| **Builder** | `SceneBuilder` | Construit l'objet `Scene` complexe étape par étape depuis un `SceneConfig` |
-| **Composite** | `PrimitiveList` | Traite un groupe de primitives comme une seule `IPrimitive` |
+| **Decorator** | `Transform` wrapping `IPrimitive` | Adds a transformation without modifying the wrapped class |
+| **Factory** | `PrimitiveFactory`, `LightFactory` | Instantiates plugins from `.so` files without knowing the concrete classes |
+| **Builder** | `SceneBuilder` | Builds the complex `Scene` object step by step from a `SceneConfig` |
+| **Composite** | `PrimitiveList` | Treats a group of primitives as a single `IPrimitive` |
 
 ---
 
-## Résumé en une phrase (pour la soutenance)
+## One-sentence summary
 
-> *"Chaque primitive est construite à l'origine. Pour la positionner dans la scène, on l'encapsule dans un `Transform` (Decorator) qui stocke une matrice 4×4 et son inverse. À l'exécution, le Transform applique l'inverse de sa matrice au rayon entrant pour le ramener dans l'espace local de la primitive avant de déléguer le calcul d'intersection, puis retransforme la normale vers l'espace monde."*
+> *"Every primitive is built at the origin. To place it in the scene, it is wrapped in a `Transform` (Decorator) that stores a 4×4 matrix and its inverse. At runtime, the Transform applies the inverse matrix to the incoming ray to bring it into the primitive's local space before delegating the intersection test, then transforms the normal back to world space."*

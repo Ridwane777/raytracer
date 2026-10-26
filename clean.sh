@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Supprime le dossier build s'il existe
+# Remove the build directory if it exists
 if [ -d "build" ]; then
     rm -rf build
-    echo "Dossier 'build' supprimé."
+    echo "Removed 'build' directory."
 fi
 
-# Supprime les fichiers générés à la racine (au cas où vous avez lancé cmake .)
+# Remove files generated at the root (in case cmake was run in-source)
 rm -rf CMakeFiles
 rm -f CMakeCache.txt
 rm -f cmake_install.cmake
@@ -14,16 +14,16 @@ rm -f Makefile
 rm -f compile_commands.json
 rm -f *.ppm
 
-# Supprime les plugins compilés
+# Remove compiled plugins
 if [ -d "plugins" ]; then
     rm -f plugins/*.so
-    echo "Plugins (.so) supprimés."
+    echo "Removed plugins (.so)."
 fi
 
-# Supprime l'exécutable généré à la racine (d'après votre CMakeLists.txt)
+# Remove the executable generated at the root (see CMakeLists.txt)
 if [ -f "raytracer" ]; then
     rm raytracer
-    echo "Exécutable 'raytracer' supprimé."
+    echo "Removed 'raytracer' executable."
 fi
 
-echo "Nettoyage CMake terminé."
+echo "CMake cleanup done."

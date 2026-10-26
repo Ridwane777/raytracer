@@ -31,7 +31,7 @@ public:
         _lib = createFn(args...);
 
         if (!_lib)
-            throw DLLoaderError("Erreur de création pour: " + path);
+            throw DLLoaderError("Failed to create instance from: " + path);
     }
 
     void clearlib()
