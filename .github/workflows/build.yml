@@ -26,3 +26,5 @@ jobs:
         run: |
           ./raytracer scenes/simple_scene.cfg
           test -s output.ppm
+          ./raytracer scenes/showcase/sunset_lake.cfg --res 320x180 -o showcase.ppm
+          test -s showcase.ppm
