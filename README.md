@@ -3,6 +3,18 @@
 [![Build](https://github.com/Ridwane777/raytracer/actions/workflows/build.yml/badge.svg)](https://github.com/Ridwane777/raytracer/actions/workflows/build.yml)
 
 A C++20 ray tracer that renders scene files to `.ppm` images, with primitives and lights loaded as dynamic `.so` plugins.
+Scenes are plain text files: the [scene guide](docs/scene-guide.md) teaches how to write one, no 3D background needed.
+
+<table>
+  <tr>
+    <td><img src="screenshots/sunset_lake.png" alt="Sunset lake" width="450"></td>
+    <td><img src="screenshots/neon_rings.png" alt="Neon rings" width="450"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/mirror_hall.png" alt="Mirror hall" width="450"></td>
+    <td><img src="screenshots/gem_gallery.png" alt="Gem gallery" width="450"></td>
+  </tr>
+</table>
 
 <table>
   <tr>
@@ -39,7 +51,7 @@ The engine follows SOLID principles and relies on four design patterns:
 - Combined and inverted 4x4 matrices, applicable to any primitive without changing its code
 
 ### Lighting
-- Ambient, directional and point lights (`plugins/point/PointLight`, with falloff)
+- Ambient, directional and point lights (no distance falloff)
 - Unlimited number of lights, contributions summed
 - Colored (RGB) lights: final color is the product of object and light colors
 - Drop shadows via shadow rays
@@ -55,9 +67,13 @@ The engine follows SOLID principles and relies on four design patterns:
 - Antialiasing by supersampling with random sub-pixel offsets
 - Recursive rendering engine
 
+### Background
+- Sky gradient (`top` and `bottom` colors) or flat color, also seen in reflections and refractions
+
 ### Display & interface
 - Scenes configured through text files (libconfig)
-- Output as `.ppm` (P3) images
+- Output as `.ppm` (P3) images, path set with `-o`
+- Optional interactive SFML 2 viewer (`--sfml`)
 - Errors reported on `stderr`, `--help` usage
 
 ## Build & usage
@@ -66,6 +82,8 @@ The engine follows SOLID principles and relies on four design patterns:
 - A `C++20` compiler
 - `cmake` (>= 3.17)
 - `libconfig++` (`sudo dnf install libconfig-c++-devel` or `sudo apt install libconfig++-dev`)
+- Optional: SFML 2.5+ (`libsfml-dev`) for the interactive viewer. Without it (or with SFML 3 only), the program
+  builds without `--sfml`
 
 ### Build
 
@@ -77,18 +95,26 @@ cmake --build build
 ### Run
 
 ```bash
-# Render the test scene
+# Render the test scene to output.ppm
 ./raytracer scenes/simple_scene.cfg
+
+# Fast preview, then the final image with more mirror bounces
+./raytracer scenes/showcase/mirror_hall.cfg --res 640x360 -o preview.ppm
+./raytracer scenes/showcase/mirror_hall.cfg --depth 10 -o mirror_hall.ppm
+convert mirror_hall.ppm mirror_hall.png   # optional, ImageMagick
 ```
 
-The image is saved as `output.ppm`.
+Options: `-o FILE`, `--res WxH`, `--depth D`, `--sfml` (see `--help`).
 
 ## Scene files
 
-Scenes are libconfig text files. See the files in `scenes/` for examples.
+Scenes are libconfig text files describing a camera, a background, objects and lights. Start with the
+**[scene guide](docs/scene-guide.md)**: a first render in 5 minutes, every object and material explained, recipes
+and troubleshooting. Examples are in `scenes/`, the four images above in `scenes/showcase/`.
 
 ## Documentation
 
+- [Scene guide](docs/scene-guide.md)
 - [Architecture](docs/architecture.md)
 - [Transformations](docs/transformations.md)
 - [Math formulas](docs/formulas.md)
