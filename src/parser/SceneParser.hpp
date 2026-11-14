@@ -26,8 +26,10 @@ private:
   TorusConfig parseTorus(const libconfig::Setting &t);
   ObjConfig parseObj(const libconfig::Setting &o);
   Colors parseColor(const libconfig::Setting &setting);
+  Colors parseRGB(const libconfig::Setting &setting);
 
   LightsConfig parseLights(const libconfig::Setting &root);
+  BackgroundConfig parseBackground(const libconfig::Setting &root);
   PointLight parsePointLight(const libconfig::Setting &l);
   DirectionalLight parseDirectionalLight(const libconfig::Setting &l);
   double getDouble(const libconfig::Setting &s, const char *key,

@@ -127,9 +127,16 @@ struct LightsConfig
     std::vector<DirectionalLight> directional;
 };
 
+struct BackgroundConfig
+{
+    Colors top;
+    Colors bottom;
+};
+
 struct SceneConfig
 {
     CameraConfig camera;
+    BackgroundConfig background;
     PrimitivesConfig primitives;
     LightsConfig lights;
 };

@@ -15,6 +15,8 @@ public:
 
     double ambientIntensity = 0.4;
     double diffuseIntensity = 0.6;
+    Color backgroundTop;
+    Color backgroundBottom;
 
     Scene() = default;
     explicit Scene(const Camera& cam);

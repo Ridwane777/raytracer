@@ -18,6 +18,10 @@ Scene SceneBuilder::build(const SceneConfig& cfg)
 
     scene.ambientIntensity = cfg.lights.ambient;
     scene.diffuseIntensity = cfg.lights.diffuse;
+    scene.backgroundTop = Color(cfg.background.top.r / 255.0,
+        cfg.background.top.g / 255.0, cfg.background.top.b / 255.0);
+    scene.backgroundBottom = Color(cfg.background.bottom.r / 255.0,
+        cfg.background.bottom.g / 255.0, cfg.background.bottom.b / 255.0);
 
     buildPrimitives(scene, cfg.primitives);
     buildLights(scene, cfg.lights);

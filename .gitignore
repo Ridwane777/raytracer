@@ -1,2 +1,6 @@
 .vscode
 .cache
+build/
+output.ppm
+raytracer
+plugins/*.so

@@ -21,6 +21,7 @@ private:
 
     Color computeDirectLighting(const IPrimitive& primitive,
                                 const HitInfo& info) const;
+    Color background(const Ray& ray) const;
     Color computeReflection(const HitInfo& info, int depth) const;
     Color computeRefraction(const IPrimitive& primitive, const HitInfo& info, int depth) const;
     void printProgress(int completedRows, int totalRows) const;

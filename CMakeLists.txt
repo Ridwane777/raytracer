@@ -19,14 +19,21 @@ foreach(PLUGIN ${PLUGINS})
 endforeach()
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-list(APPEND SOURCES "sfml/SFMLViewer.cpp")
-
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics window system QUIET)
+if(SFML_FOUND)
+    list(APPEND SOURCES "sfml/SFMLViewer.cpp")
+else()
+    message(STATUS "SFML 2 not found: building without the interactive viewer")
+endif()
 
 add_executable(raytracer ${SOURCES})
 target_include_directories(raytracer PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(raytracer PRIVATE ${PROJECT_COMPILE_FLAGS})
-target_link_libraries(raytracer PRIVATE dl config++ sfml-graphics sfml-window sfml-system)
+target_link_libraries(raytracer PRIVATE dl config++)
+if(SFML_FOUND)
+    target_compile_definitions(raytracer PRIVATE RAYTRACER_HAS_SFML)
+    target_link_libraries(raytracer PRIVATE sfml-graphics sfml-window sfml-system)
+endif()
 target_link_options(raytracer PRIVATE -rdynamic)
 set_target_properties(raytracer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"

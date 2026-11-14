@@ -34,6 +34,7 @@ SceneConfig SceneParser::parse(const std::string &filepath) {
   scene.camera = parseCamera(root);
   scene.primitives = parsePrimitives(root);
   scene.lights = parseLights(root);
+  scene.background = parseBackground(root);
   return scene;
 }
 
@@ -81,11 +82,13 @@ Vec3 SceneParser::parseVec3(const libconfig::Setting &s) {
 }
 
 Colors SceneParser::parseColor(const libconfig::Setting &s) {
-  Colors c;
   if (!s.exists("color"))
-    return c;
+    return Colors();
+  return parseRGB(s["color"]);
+}
 
-  const libconfig::Setting &col = s["color"];
+Colors SceneParser::parseRGB(const libconfig::Setting &col) {
+  Colors c;
   if (col.exists("r"))
     c.r = static_cast<int>(col["r"]);
   if (col.exists("g"))
@@ -219,6 +222,22 @@ ObjConfig SceneParser::parseObj(const libconfig::Setting &s) {
   obj.color = parseColor(s);
   parseTransformData(s, obj);
   return obj;
+}
+
+BackgroundConfig SceneParser::parseBackground(const libconfig::Setting &root) {
+  BackgroundConfig bg;
+
+  if (!root.exists("background"))
+    return bg;
+
+  const libconfig::Setting &b = root["background"];
+  if (b.exists("color"))
+    bg.top = bg.bottom = parseColor(b);
+  if (b.exists("top"))
+    bg.top = parseRGB(b["top"]);
+  if (b.exists("bottom"))
+    bg.bottom = parseRGB(b["bottom"]);
+  return bg;
 }
 
 LightsConfig SceneParser::parseLights(const libconfig::Setting &root) {

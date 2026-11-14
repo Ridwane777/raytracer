@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <mutex>
@@ -53,7 +54,7 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
 
   const IPrimitive *closest = _scene.primitives.getClosest(ray);
   if (!closest)
-    return Color(0, 0, 0);
+    return background(ray);
 
   auto t = closest->hits(ray);
   if (!t.has_value())
@@ -64,7 +65,13 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
   Vector3D viewDir = (ray.direction * -1.0).normalize();
   HitInfo info{hitPoint, normal, viewDir, closest->getShininess(),
                closest->getSpecularColor()};
-  Color lighting = computeDirectLighting(*closest, info);
+  // Planes and triangles are two-sided: light and reflect them on the side
+  // the ray comes from. Refraction keeps the geometric normal to know
+  // whether the ray enters or leaves the object.
+  HitInfo facing = info;
+  if (normal.dot(viewDir) < 0.0)
+    facing.normal = normal * -1.0;
+  Color lighting = computeDirectLighting(*closest, facing);
   Color objColor = closest->getColor(hitPoint);
   double opacity = closest->getOpacity();
   double reflectivity = closest->getReflectivity();
@@ -81,12 +88,18 @@ Color Renderer::computeColor(const Ray &ray, int depth) const {
   }
 
   if (reflectivity > 0.0 && depth < _maxDepth) {
-    Color reflectedColor = computeReflection(info, depth + 1);
+    Color reflectedColor = computeReflection(facing, depth + 1);
     return (baseColor * (1.0 - reflectivity) + reflectedColor * reflectivity)
         .clamp();
   }
 
   return baseColor.clamp();
+}
+
+Color Renderer::background(const Ray &ray) const {
+  // Horizon (Y = 0) leans toward the bottom color, looking up reaches the top one.
+  double t = std::clamp(ray.direction.normalize().Y * 1.5 + 0.2, 0.0, 1.0);
+  return _scene.backgroundBottom * (1.0 - t) + _scene.backgroundTop * t;
 }
 
 Color Renderer::computeDirectLighting(const IPrimitive &primitive,
