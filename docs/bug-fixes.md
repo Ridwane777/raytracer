@@ -263,3 +263,29 @@ The screen plane (`Rectangle3D`) was built with vectors hardcoded along the X an
       return Rectangle3D(origin, bottom_side, left_side);
   }
 ```
+
+---
+
+## Bug 7 - `Renderer::computeColor`: planes and triangles lit on one side only
+
+### File
+`src/renderer/Renderer.cpp`
+
+### Symptom
+A plane always returns the same normal (for example `+X` for an `"X"` plane), and a triangle's normal depends on
+the order of its corners. Seen from the other side, the surface received no light (black faces on `.obj`
+models), and a mirror reflected nothing: the reflected ray started from `point + normal * 1e-4`, which is
+**behind** the mirror, so it escaped to the background. Two facing mirrors could not work.
+
+### Change
+Lighting and reflection now use a normal turned toward the incoming ray. Refraction keeps the geometric normal,
+because it needs to know whether the ray enters or leaves the object.
+
+```cpp
+HitInfo facing = info;
+if (normal.dot(viewDir) < 0.0)
+  facing.normal = normal * -1.0;
+Color lighting = computeDirectLighting(*closest, facing);
+// ...
+Color reflectedColor = computeReflection(facing, depth + 1);
+```
