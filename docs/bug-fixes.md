@@ -1,10 +1,10 @@
-# Bug Fixes — RayTracer
+# Bug Fixes - RayTracer
 
 This document lists every bug found and fixed during the project's code review, with an explanation and the changes made.
 
 ---
 
-## Bug 1 — `Matrix4x4::transformRay`: transforming the wrong ray
+## Bug 1 - `Matrix4x4::transformRay`: transforming the wrong ray
 
 ### File
 `src/math/Matrix4x4.cpp`
@@ -40,7 +40,7 @@ If the matrix contains a Scale (stretch), the direction vector may no longer hav
 
 ---
 
-## Bug 2 — `Transform::getNormal`: wrong normals under Scale
+## Bug 2 - `Transform::getNormal`: wrong normals under Scale
 
 ### Files
 `src/scene/Transform.cpp`, `src/math/Matrix4x4.hpp / .cpp`
@@ -90,7 +90,7 @@ Matrix4x4 Matrix4x4::transpose() const {
 
 ---
 
-## Bug 3 — `SceneBuilder`: dangling pointer
+## Bug 3 - `SceneBuilder`: dangling pointer
 
 ### Files
 `src/scene/SceneBuilder.cpp`, `src/scene/SceneBuilder.hpp`
@@ -162,7 +162,7 @@ A plugin loaded with `dlopen` **must stay in memory** as long as objects created
 
 ---
 
-## Bug 4 — `Sphere::createPrimitive`: wrong parameter names
+## Bug 4 - `Sphere::createPrimitive`: wrong parameter names
 
 ### File
 `plugins/sphere/Sphere.cpp`
@@ -189,7 +189,7 @@ A plugin loaded with `dlopen` **must stay in memory** as long as objects created
 
 ---
 
-## Bug 5 — `Plane::createPrimitive`: wrong axis and wrong parameter names
+## Bug 5 - `Plane::createPrimitive`: wrong axis and wrong parameter names
 
 ### File
 `plugins/plane/Plane.cpp`
@@ -198,14 +198,14 @@ A plugin loaded with `dlopen` **must stay in memory** as long as objects created
 1. Every plane was treated as a Z-axis plane, regardless of the configured value.
 2. `std::out_of_range` crash for the color parameters.
 
-### Explanation — the axis
+### Explanation - the axis
 
 `SceneBuilder` encodes the axis as a `double`: `0.0` = X, `1.0` = Y, `2.0` = Z.
 The `Plane` constructor expects a `char`: `'X'`, `'Y'` or `'Z'`.
 
 The old code did `static_cast<char>(params.at("axis"))`, which yielded `char(0)`, `char(1)` or `char(2)` (ASCII control characters), never the letters `'X'`/`'Y'`/`'Z'`. `Plane::hits()` therefore always fell into the `else` branch (Z axis).
 
-### Explanation — the colors
+### Explanation - the colors
 Same problem as Sphere: the keys sent are `"color_r/g/b"` but the code read `"r/g/b"`.
 
 ### Change
@@ -227,7 +227,7 @@ Same problem as Sphere: the keys sent are `"color_r/g/b"` but the code read `"r/
 
 ---
 
-## Bug 6 — `Camera::getScreen`: rotation ignored
+## Bug 6 - `Camera::getScreen`: rotation ignored
 
 ### File
 `src/scene/Camera.cpp`

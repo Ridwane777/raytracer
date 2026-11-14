@@ -98,7 +98,7 @@ int main(int ac, char** av)
             cfg.maxDepth     = maxDepth;
             cfg.showHUD      = showHUD;
             cfg.showTileGrid = tileDebug;
-            cfg.windowTitle  = "RayTracer — " + scenePath;
+            cfg.windowTitle  = "RayTracer - " + scenePath;
 
             std::cout << "[raytracer] SFML mode\n"
                       << "  Scene   : " << scenePath << "\n"

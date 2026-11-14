@@ -1,4 +1,4 @@
-# Architecture — Raytracer
+# Architecture - Raytracer
 
 ## Goal
 
@@ -258,7 +258,7 @@ public:
 
 ---
 
-## Design Pattern: Decorator — `Transform`
+## Design Pattern: Decorator - `Transform`
 
 Wraps any `IPrimitive` and applies a transformation matrix to it. Adding rotation or scale
 requires no change to the concrete primitives.
@@ -301,7 +301,7 @@ IPrimitive* transformed = new Transform(sphere, mat);
 
 ---
 
-## Design Pattern: Builder — `SceneBuilder`
+## Design Pattern: Builder - `SceneBuilder`
 
 ```cpp
 class SceneBuilder {
@@ -325,7 +325,7 @@ public:
 
 ---
 
-## Design Pattern: Factory — `PrimitiveFactory` / `LightFactory`
+## Design Pattern: Factory - `PrimitiveFactory` / `LightFactory`
 
 Loads `.so` plugins via `dlopen` and caches the handles.
 
@@ -357,7 +357,7 @@ private:
 
 ---
 
-## Design Pattern: Composite — `PrimitiveList`
+## Design Pattern: Composite - `PrimitiveList`
 
 The Renderer calls `hits()` on a single object and gets the closest intersection among all
 objects in the scene. Also essential for drop shadows: `ILight` receives the whole scene as an
@@ -462,7 +462,7 @@ extern "C" IPrimitive* createPrimitive(const std::map<std::string, double>& para
 extern "C" void        destroyPrimitive(IPrimitive* p);
 ```
 
-### `Sphere` — `plugins/raytracer_sphere.so`
+### `Sphere` - `plugins/raytracer_sphere.so`
 
 ```cpp
 class Sphere : public IPrimitive {
@@ -485,7 +485,7 @@ public:
 };
 ```
 
-### `Plane` — `plugins/raytracer_plane.so`
+### `Plane` - `plugins/raytracer_plane.so`
 
 ```cpp
 class Plane : public IPrimitive {
@@ -508,7 +508,7 @@ public:
 };
 ```
 
-### `Cylinder` — `plugins/raytracer_cylinder.so`
+### `Cylinder` - `plugins/raytracer_cylinder.so`
 
 Added later without modifying any existing class.
 
@@ -536,7 +536,7 @@ extern "C" ILight* createLight(const std::map<std::string, double>& params);
 extern "C" void    destroyLight(ILight* l);
 ```
 
-### `AmbientLight` — `plugins/raytracer_ambient.so`
+### `AmbientLight` - `plugins/raytracer_ambient.so`
 
 ```cpp
 class AmbientLight : public ILight {
@@ -551,7 +551,7 @@ public:
 };
 ```
 
-### `DirectionalLight` — `plugins/raytracer_directional.so`
+### `DirectionalLight` - `plugins/raytracer_directional.so`
 
 ```cpp
 class DirectionalLight : public ILight {
@@ -737,11 +737,11 @@ raytracer/
 
 ## Recommended implementation order
 
-1. `Point3D`, `Vector3D`, `Color` — no dependencies
-2. `Ray`, `Rectangle3D`, `Matrix4x4` — depend on Vector3D/Point3D
-3. `IPrimitive`, `ILight`, `HitInfo` — the contracts to set first
-4. `Sphere` + `Plane` (plugins) — first testable intersections
-5. `Camera` + `Rectangle3D::pointAt` — ray generation
+1. `Point3D`, `Vector3D`, `Color` - no dependencies
+2. `Ray`, `Rectangle3D`, `Matrix4x4` - depend on Vector3D/Point3D
+3. `IPrimitive`, `ILight`, `HitInfo` - the contracts to set first
+4. `Sphere` + `Plane` (plugins) - first testable intersections
+5. `Camera` + `Rectangle3D::pointAt` - ray generation
 6. `PrimitiveList` (Composite) + `Transform` (Decorator)
 7. `AmbientLight` + `DirectionalLight` (plugins)
 8. `SceneBuilder` (Builder) + `PrimitiveFactory` + `LightFactory`

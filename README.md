@@ -98,3 +98,7 @@ Scenes are libconfig text files. See the files in `scenes/` for examples.
 ## Author
 
 Ridwane777
+
+## License
+
+[MIT](LICENSE)

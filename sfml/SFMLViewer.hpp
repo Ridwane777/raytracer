@@ -92,7 +92,7 @@ public:
         int         renderHeight = 360;
         int         numThreads   = 0;
         int         maxDepth     = 0;
-        std::string windowTitle  = "RayTracer — SFML Viewer";
+        std::string windowTitle  = "RayTracer - SFML Viewer";
         bool        showHUD      = true;
         bool        showTileGrid = false; 
     };
